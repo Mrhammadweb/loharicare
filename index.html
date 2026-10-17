@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LohariCare Direct - Wholesale Medical Supplies Lahore</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#115e59',
+              900: '#134e4a',
+            },
+            accent: {
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .badge-bounce { animation: bounce 0.3s ease-in-out; }
+    @keyframes bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between antialiased">
+
+  <!-- TOP ANNOUNCEMENT BAR -->
+  <div class="bg-brand-900 text-white text-xs py-2 px-4">
+    <div class="max-w-7xl mx-auto flex justify-between items-center flex-wrap gap-2">
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-teal-400"></i> Sourced Direct from Lohari Medicine Market, Lahore</span>
+        <span class="hidden md:inline text-brand-100">|</span>
+        <span class="hidden md:flex items-center gap-1.5"><i class="fa-solid fa-truck-fast text-amber-400"></i> Same-Day Express Delivery in Lahore</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="https://wa.me/923001234567" id="headerPhoneLink" target="_blank" class="hover:underline flex items-center gap-1"><i class="fa-brands fa-whatsapp text-emerald-400"></i> +92 300 1234567</a>
+        <span>PKR (₨)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN HEADER -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20 gap-4">
+        
+        <!-- BRAND LOGO -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+          <div class="w-11 h-11 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+            <i class="fa-solid fa-staff-snake text-2xl"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-xl sm:text-2xl text-slate-900 tracking-tight">LohariCare</span>
+              <span class="bg-brand-100 text-brand-800 text-xs px-2 py-0.5 rounded font-semibold border border-brand-500/20">DIRECT</span>
+            </div>
+            <p class="text-xs text-slate-500 hidden sm:block">Lahore Wholesale Medical Hub Express</p>
+          </div>
+        </div>
+
+        <!-- LIVE SEARCH BAR -->
+        <div class="flex-1 max-w-xl mx-2 hidden md:block">
+          <div class="relative">
+            <input 
+              type="text" 
+              id="searchInput" 
+              onkeyup="filterProducts()" 
+              placeholder="Search supplements, Omron BP meters, Milks, Surgical items..." 
+              class="w-full pl-10 pr-10 py-2.5 rounded-full border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm transition-all"
+            >
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+            <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3.5 top-2.5 text-slate-400 hover:text-slate-600">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- HEADER ACTIONS -->
+        <div class="flex items-center gap-3 sm:gap-5">
+          <button onclick="scrollToSection('trackerSection')" class="text-xs sm:text-sm font-medium text-slate-600 hover:text-brand-600 flex items-center gap-1.5 py-2 px-3 rounded-lg hover:bg-slate-100 transition">
+            <i class="fa-solid fa-boxes-packing text-brand-600"></i>
+            <span class="hidden sm:inline">Track Order</span>
+          </button>
+
+          <!-- CART BUTTON -->
+          <button onclick="toggleCartDrawer(true)" class="relative bg-brand-50 hover:bg-brand-100 text-brand-700 p-3 rounded-xl transition flex items-center gap-2 border border-brand-200">
+            <i class="fa-solid fa-cart-shopping text-lg"></i>
+            <span class="font-semibold text-sm hidden sm:inline">Cart</span>
+            <span id="cartBadge" class="bg-brand-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center -mt-1 -mr-1">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- MOBILE SEARCH BAR -->
+      <div class="pb-3 md:hidden">
+        <div class="relative">
+          <input 
+            type="text" 
+            id="searchInputMobile" 
+            onkeyup="syncMobileSearch(this.value)" 
+            placeholder="Search items in Lohari Market..." 
+            class="w-full pl-10 pr-4 py-2 rounded-full border border-slate-300 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="bg-gradient-to-r from-brand-900 via-brand-800 to-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10 pointer-events-none">
+      <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-brand-500 rounded-full blur-3xl"></div>
+      <div class="absolute -left-20 -top-20 w-96 h-96 bg-amber-500 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto relative z-10 grid md:grid-cols-12 gap-8 items-center">
+      <div class="md:col-span-7 space-y-5">
+        <div class="inline-flex items-center gap-2 bg-brand-500/20 border border-brand-400/30 px-3 py-1 rounded-full text-xs font-medium text-brand-100">
+          <i class="fa-solid fa-certificate text-amber-400"></i> Direct Wholesale Rates from Lohari Gate Market
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
+          Genuine Medical Supplies & Health Essentials Delivered Fast.
+        </h1>
+        <p class="text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
+          Bypass middlemen markup. Access certified vitamins, adult/infant nutrition milks, digital blood pressure devices, nebulizers, and surgical tools straight from Pakistan’s leading pharmaceutical market in Lahore.
+        </p>
+
+        <!-- VALUE PROPOSITIONS -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+          <div class="bg-white/10 backdrop-blur border border-white/10 p-3 rounded-xl text-center">
+            <i class="fa-solid fa-shield-halved text-teal-300 text-lg mb-1"></i>
+            <p class="text-xs font-semibold">100% Authentic</p>
+            <p class="text-[10px] text-slate-300">DRAP Compliant</p>
+          </div>
+          <div class="bg-white/10 backdrop-blur border border-white/10 p-3 rounded-xl text-center">
+            <i class="fa-solid fa-bolt text-amber-400 text-lg mb-1"></i>
+            <p class="text-xs font-semibold">Lahore Same-Day</p>
+            <p class="text-[10px] text-slate-300">Express Delivery</p>
+          </div>
+          <div class="bg-white/10 backdrop-blur border border-white/10 p-3 rounded-xl text-center">
+            <i class="fa-solid fa-wallet text-emerald-300 text-lg mb-1"></i>
+            <p class="text-xs font-semibold">Wholesale Savings</p>
+            <p class="text-[10px] text-slate-300">Direct Prices</p>
+          </div>
+          <div class="bg-white/10 backdrop-blur border border-white/10 p-3 rounded-xl text-center">
+            <i class="fa-solid fa-money-bill-transfer text-sky-300 text-lg mb-1"></i>
+            <p class="text-xs font-semibold">COD & Mobile Wallet</p>
+            <p class="text-[10px] text-slate-300">Easy Payment</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROMO BANNER -->
+      <div class="md:col-span-5 flex justify-center">
+        <div class="bg-white text-slate-800 rounded-2xl p-6 shadow-2xl border border-white/20 w-full max-w-md">
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-xs font-bold uppercase tracking-wider text-brand-700 bg-brand-50 px-2.5 py-1 rounded-md">Lohari Special Offer</span>
+            <span class="text-xs text-slate-500"><i class="fa-solid fa-clock text-amber-500"></i> Stock Ready</span>
+          </div>
+          <div class="flex gap-4 items-center mb-4">
+            <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=300&auto=format&fit=crop&q=60" alt="BP Monitor" class="w-20 h-20 object-cover rounded-xl border border-slate-200">
+            <div>
+              <h3 class="font-bold text-slate-900 leading-snug">Digital Automatic BP Monitor (Arm Type)</h3>
+              <p class="text-xs text-slate-500 mt-1">Includes 1-Year Brand Warranty</p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-brand-700 font-extrabold text-lg">PKR 4,850</span>
+                <span class="text-xs text-slate-400 line-through">PKR 6,200</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="addToCart('p3')" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-md">
+            <i class="fa-solid fa-cart-plus"></i> Add Promo Item to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT CATALOG SECTION -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
+    
+    <!-- CATEGORY TABS -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
+      <div>
+        <h2 class="text-2xl font-bold text-slate-900">Explore Medical Catalog</h2>
+        <p class="text-sm text-slate-500">Sourced fresh daily from wholesale vendors in Lohari Market</p>
+      </div>
+
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+        <button onclick="filterCategory('all')" id="tab-all" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-brand-600 text-white shadow-sm transition">
+          All Products
+        </button>
+        <button onclick="filterCategory('supplements')" id="tab-supplements" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500 hover:text-brand-600 transition">
+          Supplements & Vitamins
+        </button>
+        <button onclick="filterCategory('milks')" id="tab-milks" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500 hover:text-brand-600 transition">
+          Formula & Nutrition Milks
+        </button>
+        <button onclick="filterCategory('devices')" id="tab-devices" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500 hover:text-brand-600 transition">
+          BP Meters & Devices
+        </button>
+        <button onclick="filterCategory('surgical')" id="tab-surgical" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500 hover:text-brand-600 transition">
+          Surgical & First Aid
+        </button>
+      </div>
+    </div>
+
+    <!-- PRODUCT GRID -->
+    <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+    <!-- NO PRODUCTS MSG -->
+    <div id="noProductsMsg" class="hidden text-center py-16">
+      <i class="fa-solid fa-box-open text-5xl text-slate-300 mb-3"></i>
+      <h3 class="text-lg font-bold text-slate-700">No matching medical items found</h3>
+      <p class="text-sm text-slate-500 max-w-md mx-auto mt-1">Try adjusting your search query or switching product categories.</p>
+      <button onclick="clearSearch(); filterCategory('all');" class="mt-4 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-700">
+        Reset Search Filters
+      </button>
+    </div>
+
+    <!-- HEALTH ASSISTANT -->
+    <section class="mt-16 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+      <div class="max-w-3xl mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-2.5 py-1 rounded">Interactive Wellness Assistant</span>
+        <h2 class="text-2xl font-bold text-slate-900 mt-2">Health & Dosage Evaluator</h2>
+        <p class="text-sm text-slate-500">Quick self-assessment tools for daily health management before purchasing equipment or supplements.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- BP Tool -->
+        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fa-solid fa-heart-pulse text-red-500 text-xl"></i>
+              <h3 class="font-bold text-slate-800">Blood Pressure Reading Evaluator</h3>
+            </div>
+            <p class="text-xs text-slate-500 mb-4">Enter your BP monitor reading to check standard AHA pressure classifications.</p>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Systolic (mmHg)</label>
+                <input type="number" id="bpSystolic" placeholder="e.g. 120" class="w-full px-3 py-2 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-brand-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Diastolic (mmHg)</label>
+                <input type="number" id="bpDiastolic" placeholder="e.g. 80" class="w-full px-3 py-2 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-brand-500 outline-none">
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <button onclick="evaluateBP()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium text-xs py-2.5 rounded-lg transition mb-3">
+              Evaluate Reading
+            </button>
+            <div id="bpResult" class="p-3 rounded-lg text-xs font-medium text-slate-600 bg-white border border-slate-200">
+              Enter values above to see reading guidance.
+            </div>
+          </div>
+        </div>
+
+        <!-- Hydration Tool -->
+        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fa-solid fa-glass-water text-sky-500 text-xl"></i>
+              <h3 class="font-bold text-slate-800">Daily Hydration & Milk Intake Calculator</h3>
+            </div>
+            <p class="text-xs text-slate-500 mb-4">Calculate recommended fluid intake tailored for supplement intake efficiency.</p>
+
+            <div class="space-y-3 mb-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Body Weight (kg)</label>
+                <input type="number" id="bodyWeight" placeholder="e.g. 70" class="w-full px-3 py-2 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-brand-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Daily Activity Level</label>
+                <select id="activityLevel" class="w-full px-3 py-2 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-brand-500 outline-none">
+                  <option value="sedentary">Light / Office Work</option>
+                  <option value="moderate">Moderate Exercise / Walking</option>
+                  <option value="active">Active Outdoor / Physical Labor</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <button onclick="calculateHydration()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs py-2.5 rounded-lg transition mb-3">
+              Calculate Hydration Requirement
+            </button>
+            <div id="hydrationResult" class="p-3 rounded-lg text-xs font-medium text-slate-600 bg-white border border-slate-200">
+              Enter weight to calculate daily water requirements.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVE ORDER TRACKER SECTION -->
+    <section id="trackerSection" class="mt-16 bg-gradient-to-br from-slate-900 to-brand-950 text-white rounded-2xl shadow-xl p-6 sm:p-10">
+      <div class="max-w-2xl mx-auto text-center">
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-white/10 px-3 py-1 rounded-full">Lohari Cloud Tracking</span>
+        <h2 class="text-2xl sm:text-3xl font-bold mt-3">Live Order Tracking Portal</h2>
+        <p class="text-slate-300 text-sm mt-2">Enter your Order ID to check your live dispatch status straight from Firebase.</p>
+
+        <div class="mt-6 flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
+          <input 
+            type="text" 
+            id="trackingInput" 
+            placeholder="e.g., LHR-84920" 
+            class="flex-1 px-4 py-3 rounded-xl text-slate-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+          >
+          <button onclick="trackOrder()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-6 py-3 rounded-xl text-sm transition shadow-md">
+            Track Package
+          </button>
+        </div>
+      </div>
+
+      <div id="trackingDisplay" class="mt-8 max-w-3xl mx-auto"></div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 text-slate-400 text-sm border-t border-slate-800 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="space-y-3">
+          <div class="flex items-center gap-2 text-white font-bold text-lg">
+            <i class="fa-solid fa-staff-snake text-brand-500"></i> LohariCare Direct
+          </div>
+          <p class="text-xs leading-relaxed text-slate-400">
+            Connecting households, pharmacies, and clinics across Pakistan directly to Lohari Gate's wholesale pharmaceutical distributors.
+          </p>
+          <div class="text-xs space-y-1 text-slate-300">
+            <p><i class="fa-solid fa-location-dot text-brand-500 mr-2"></i> Lohari Medicine Market, Circular Rd, Lahore</p>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-white font-semibold text-xs uppercase tracking-wider mb-4">Product Categories</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="#" onclick="filterCategory('supplements')" class="hover:text-white transition">Health & Dietary Supplements</a></li>
+            <li><a href="#" onclick="filterCategory('milks')" class="hover:text-white transition">Formula Milks & Adult Nutrition</a></li>
+            <li><a href="#" onclick="filterCategory('devices')" class="hover:text-white transition">Blood Pressure & Glucose Monitors</a></li>
+            <li><a href="#" onclick="filterCategory('surgical')" class="hover:text-white transition">Surgical Supplies & Gloves</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-semibold text-xs uppercase tracking-wider mb-4">Customer Support</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="#trackerSection" class="hover:text-white transition">Track Your Order</a></li>
+            <li><span class="text-slate-400">Same-Day Express Delivery Lahore</span></li>
+            <li><span class="text-slate-400">Wholesale Bulk Inquiries</span></li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <h4 class="text-white font-bold text-sm flex items-center gap-2">
+            <i class="fa-brands fa-whatsapp text-emerald-400 text-lg"></i> Direct WhatsApp Order
+          </h4>
+          <p class="text-xs text-slate-300 mt-2">Have a prescription or bulk order list? Send a direct photo to our desk.</p>
+          <a href="https://wa.me/923001234567" id="footerWaBtn" target="_blank" class="mt-3 inline-flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-3 rounded-lg transition">
+            Chat on WhatsApp
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-8 pt-8 border-t border-slate-800 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p>© 2026 LohariCare Direct. Powered by Firebase Cloud.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CART DRAWER MODAL -->
+  <div id="cartDrawer" class="fixed inset-0 z-50 overflow-hidden hidden">
+    <div onclick="toggleCartDrawer(false)" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
+    <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+      <div class="w-screen max-w-md bg-white shadow-2xl flex flex-col justify-between">
+        <div class="p-5 bg-slate-900 text-white flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-cart-shopping text-brand-400"></i>
+            <h3 class="font-bold text-lg">Your Medical Cart</h3>
+          </div>
+          <button onclick="toggleCartDrawer(false)" class="text-slate-400 hover:text-white transition">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <div id="cartItemsList" class="p-5 flex-1 overflow-y-auto space-y-4"></div>
+
+        <div class="p-5 border-t border-slate-200 bg-slate-50 space-y-3">
+          <div class="flex justify-between text-xs text-slate-500">
+            <span>Subtotal</span>
+            <span id="cartSubtotal" class="font-semibold text-slate-800">PKR 0</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-500">
+            <span>Delivery Fee</span>
+            <span id="cartDeliveryFee" class="font-semibold text-emerald-600">PKR 150</span>
+          </div>
+          <div class="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-200">
+            <span>Estimated Total</span>
+            <span id="cartGrandTotal" class="text-brand-700">PKR 0</span>
+          </div>
+
+          <button onclick="openCheckoutModal()" id="checkoutBtn" disabled class="w-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition shadow-md flex items-center justify-center gap-2">
+            Proceed to Checkout <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div id="checkoutModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+    <div onclick="closeCheckoutModal()" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 sm:p-8 overflow-hidden my-8">
+        
+        <div class="flex justify-between items-center mb-6 border-b pb-4 border-slate-200">
+          <div>
+            <h3 class="text-xl font-bold text-slate-900">Complete Your Order</h3>
+            <p class="text-xs text-slate-500">Direct Dispatch from Lohari Market Hub</p>
+          </div>
+          <button onclick="closeCheckoutModal()" class="text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <form id="checkoutForm" onsubmit="handlePlaceOrder(event)" class="space-y-4">
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-brand-700">1. Delivery Information</h4>
+            
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
+              <input type="text" id="custName" required placeholder="e.g. Muhammad Ali" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Mobile / WhatsApp No. *</label>
+                <input type="tel" id="custPhone" required placeholder="0300 1234567" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">City *</label>
+                <select id="custCity" onchange="updateDeliveryFeeForCity()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-white">
+                  <option value="Lahore">Lahore (Same-Day Express)</option>
+                  <option value="Karachi">Karachi</option>
+                  <option value="Islamabad">Islamabad / Rawalpindi</option>
+                  <option value="Faisalabad">Faisalabad</option>
+                  <option value="Multan">Multan</option>
+                  <option value="Other">Other City in Pakistan</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Complete Address / Landmark *</label>
+              <textarea id="custAddress" required rows="2" placeholder="House/Clinic No, Street, Area name" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
+            </div>
+          </div>
+
+          <!-- PAYMENT METHODS -->
+          <div class="space-y-3 pt-3 border-t border-slate-200">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-brand-700">2. Select Payment Option</h4>
+
+            <div class="grid grid-cols-2 gap-2">
+              <label class="cursor-pointer border border-slate-200 rounded-xl p-3 flex flex-col items-center justify-center text-center hover:border-brand-500 transition has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50">
+                <input type="radio" name="paymentMethod" value="COD" checked onclick="togglePaymentFields('COD')" class="sr-only">
+                <i class="fa-solid fa-hand-holding-dollar text-xl text-brand-600 mb-1"></i>
+                <span class="text-xs font-semibold">Cash on Delivery</span>
+              </label>
+
+              <label class="cursor-pointer border border-slate-200 rounded-xl p-3 flex flex-col items-center justify-center text-center hover:border-brand-500 transition has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50">
+                <input type="radio" name="paymentMethod" value="MOBILE_WALLET" onclick="togglePaymentFields('MOBILE_WALLET')" class="sr-only">
+                <i class="fa-solid fa-mobile-retro text-xl text-amber-500 mb-1"></i>
+                <span class="text-xs font-semibold">JazzCash / EasyPaisa</span>
+              </label>
+            </div>
+
+            <div id="walletPrompt" class="hidden p-3 bg-amber-50 rounded-lg border border-amber-200 text-xs">
+              <label class="block font-semibold text-slate-700 mb-1">Sender Mobile Number</label>
+              <input type="tel" id="walletNo" placeholder="03XX XXXXXXX" class="w-full px-3 py-1.5 border border-slate-300 rounded text-sm bg-white outline-none">
+              <p class="text-[10px] text-slate-500 mt-1">Transfer total amount to our business wallet. Order status will update once verified.</p>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-200 flex items-center justify-between">
+            <div>
+              <p class="text-xs text-slate-500">Payable Total</p>
+              <p id="checkoutGrandTotal" class="text-xl font-bold text-brand-700">PKR 0</p>
+            </div>
+            <button type="submit" id="submitOrderBtn" class="bg-brand-600 hover:bg-brand-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg text-sm flex items-center gap-2">
+              Confirm Order <i class="fa-solid fa-check-circle"></i>
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS CONFIRMATION MODAL -->
+  <div id="successModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+    <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl relative">
+        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl mb-4">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-slate-900">Order Placed & Saved!</h3>
+        <p class="text-sm text-slate-500 mt-2">Your order has been recorded in our database. Click below to verify details on WhatsApp.</p>
+
+        <div class="my-6 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+          <p class="text-xs text-slate-500">Your Unique Tracking Code</p>
+          <p id="generatedOrderId" class="font-mono text-2xl font-extrabold text-brand-700 my-1">LHR-98124</p>
+          <p class="text-[11px] text-slate-400">Save this code to check delivery status anytime</p>
+        </div>
+
+        <div class="space-y-2">
+          <button onclick="copyTrackingCode()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2">
+            <i class="fa-regular fa-copy"></i> Copy Tracking Code
+          </button>
+          <a id="whatsappOrderLink" href="#" target="_blank" class="block w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-md">
+            <i class="fa-brands fa-whatsapp mr-1"></i> Send Order to Store WhatsApp
+          </a>
+          <button onclick="finishOrderAndTrack()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-xl text-xs transition">
+            Track Order Status Live
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT & FIREBASE INTEGRATION -->
+  <script type="module">
+    // --- FIREBASE SDK IMPORTS ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // --- CONFIGURATION ---
+    const MY_WHATSAPP_NUMBER = "923001234567";
+
+    // ⚠️ PASTE YOUR FIREBASE CONFIGURATION KEYS BELOW FROM FIREBASE CONSOLE:
+    const firebaseConfig = {
+      apiKey: "AIzaSyBfteVKL-Z9XCRtbNaQaDm1rtySkUekxMw",
+      authDomain: "loharicare.firebaseapp.com",
+      projectId: "loharicare",
+      storageBucket: "loharicare.firebasestorage.app",
+      messagingSenderId: "229595808676",
+      appId: "1:229595808676:web:75d9977bb54772e6d1b731"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // --- PRODUCT CATALOG DATA ---
+    const products = [
+      {
+        id: "p1",
+        title: "Evion 400mg Vitamin E Capsules (Box of 100)",
+        category: "supplements",
+        price: 1250,
+        origPrice: 1500,
+        rating: 4.8,
+        reviews: 142,
+        image: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=500&auto=format&fit=crop&q=60",
+        drap: "DRAP Reg: 004821",
+        expiry: "Exp: 11/2027",
+        stock: "In Stock"
+      },
+      {
+        id: "p2",
+        title: "Surbex Z Zinc + B-Complex Tablets (30s)",
+        category: "supplements",
+        price: 480,
+        origPrice: 550,
+        rating: 4.9,
+        reviews: 310,
+        image: "https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=500&auto=format&fit=crop&q=60",
+        drap: "DRAP Reg: 019283",
+        expiry: "Exp: 08/2027",
+        stock: "In Stock"
+      },
+      {
+        id: "p3",
+        title: "Digital Automatic BP Monitor (Arm Type)",
+        category: "devices",
+        price: 4850,
+        origPrice: 6200,
+        rating: 4.7,
+        reviews: 89,
+        image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60",
+        drap: "1 Year Official Warranty",
+        expiry: "Medical Device",
+        stock: "Low Stock (Lohari Hub)"
+      },
+      {
+        id: "p4",
+        title: "Pediasure Complete Nutrition Powder (400g Vanilla)",
+        category: "milks",
+        price: 2450,
+        origPrice: 2800,
+        rating: 4.9,
+        reviews: 205,
+        image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60",
+        drap: "Imported Authentic",
+        expiry: "Exp: 04/2027",
+        stock: "In Stock"
+      },
+      {
+        id: "p5",
+        title: "Compressor Nebulizer Machine (Heavy Duty)",
+        category: "devices",
+        price: 3800,
+        origPrice: 4500,
+        rating: 4.6,
+        reviews: 64,
+        image: "https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=500&auto=format&fit=crop&q=60",
+        drap: "2 Year Warranty",
+        expiry: "Includes Masks",
+        stock: "In Stock"
+      },
+      {
+        id: "p6",
+        title: "Nitin Sterile Powder-Free Surgical Gloves (Box of 50 Pairs)",
+        category: "surgical",
+        price: 1850,
+        origPrice: 2200,
+        rating: 4.8,
+        reviews: 118,
+        image: "https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=500&auto=format&fit=crop&q=60",
+        drap: "Surgical Grade",
+        expiry: "Sterile Pack",
+        stock: "In Stock"
+      },
+      {
+        id: "p7",
+        title: "Accu-Chek Instant Blood Glucose Meter + 25 Strips",
+        category: "devices",
+        price: 3650,
+        origPrice: 4100,
+        rating: 4.9,
+        reviews: 240,
+        image: "https://images.unsplash.com/photo-1615461066841-6116e61058f4?w=500&auto=format&fit=crop&q=60",
+        drap: "ISO/DRAP Certified",
+        expiry: "Strips Exp: 2027",
+        stock: "In Stock"
+      },
+      {
+        id: "p8",
+        title: "Ensure Adult High Protein Nutrition Milk (800g)",
+        category: "milks",
+        price: 4950,
+        origPrice: 5600,
+        rating: 4.9,
+        reviews: 175,
+        image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&auto=format&fit=crop&q=60",
+        drap: "100% Original Sourced",
+        expiry: "Exp: 09/2027",
+        stock: "In Stock"
+      }
+    ];
+
+    // APPLICATION STATE
+    window.cart = [];
+    window.currentCategory = 'all';
+    window.searchQuery = '';
+    window.deliveryFee = 150;
+    window.selectedCity = 'Lahore';
+    window.lastGeneratedOrderId = '';
+
+    // --- RENDER PRODUCTS ---
+    window.renderProducts = function() {
+      const grid = document.getElementById('productGrid');
+      const noProd = document.getElementById('noProductsMsg');
+      grid.innerHTML = '';
+
+      const filtered = products.filter(p => {
+        const matchesCategory = (window.currentCategory === 'all' || p.category === window.currentCategory);
+        const matchesSearch = p.title.toLowerCase().includes(window.searchQuery.toLowerCase()) || 
+                              p.drap.toLowerCase().includes(window.searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.classList.add('hidden');
+        noProd.classList.remove('hidden');
+        return;
+      }
+
+      grid.classList.remove('hidden');
+      noProd.classList.add('hidden');
+
+      filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group";
+        
+        card.innerHTML = `
+          <div>
+            <div class="relative overflow-hidden bg-slate-100 h-48">
+              <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur text-white text-[10px] font-bold px-2 py-1 rounded">
+                ${p.drap}
+              </span>
+              <span class="absolute top-3 right-3 bg-brand-600 text-white text-[10px] font-extrabold px-2 py-1 rounded">
+                Wholesale
+              </span>
+            </div>
+            
+            <div class="p-4 space-y-2">
+              <div class="flex items-center justify-between text-xs text-slate-500">
+                <span><i class="fa-solid fa-star text-amber-400"></i> ${p.rating} (${p.reviews})</span>
+                <span class="text-emerald-600 font-medium">${p.stock}</span>
+              </div>
+
+              <h3 class="font-bold text-slate-800 text-sm line-clamp-2 leading-snug group-hover:text-brand-600 transition">
+                ${p.title}
+              </h3>
+
+              <p class="text-[11px] text-slate-400"><i class="fa-regular fa-calendar-check mr-1"></i>${p.expiry}</p>
+            </div>
+          </div>
+
+          <div class="p-4 pt-0">
+            <div class="flex items-baseline justify-between mb-3">
+              <div>
+                <span class="text-base font-extrabold text-slate-900">PKR ${p.price.toLocaleString()}</span>
+                <span class="text-xs text-slate-400 line-through ml-1">PKR ${p.origPrice.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <button onclick="addToCart('${p.id}')" class="w-full bg-slate-100 hover:bg-brand-600 hover:text-white text-slate-800 font-semibold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-cart-plus"></i> Add to Cart
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    };
+
+    // --- CATEGORY & SEARCH ---
+    window.filterCategory = function(cat) {
+      window.currentCategory = cat;
+      document.querySelectorAll('.category-tab').forEach(btn => {
+        btn.className = "category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500 hover:text-brand-600 transition";
+      });
+      const activeTab = document.getElementById(`tab-${cat}`);
+      if(activeTab) {
+        activeTab.className = "category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-brand-600 text-white shadow-sm transition";
+      }
+      window.renderProducts();
+    };
+
+    window.filterProducts = function() {
+      window.searchQuery = document.getElementById('searchInput').value;
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (window.searchQuery.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      window.renderProducts();
+    };
+
+    window.syncMobileSearch = function(val) {
+      document.getElementById('searchInput').value = val;
+      window.filterProducts();
+    };
+
+    window.clearSearch = function() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchInputMobile').value = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      window.searchQuery = '';
+      window.renderProducts();
+    };
+
+    // --- CART SYSTEM ---
+    window.addToCart = function(productId) {
+      const product = products.find(p => p.id === productId);
+      const existing = window.cart.find(item => item.id === productId);
+
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        window.cart.push({ ...product, qty: 1 });
+      }
+
+      window.updateCartUI();
+      window.toggleCartDrawer(true);
+    };
+
+    window.changeQty = function(productId, delta) {
+      const item = window.cart.find(i => i.id === productId);
+      if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) {
+          window.cart = window.cart.filter(i => i.id !== productId);
+        }
+      }
+      window.updateCartUI();
+    };
+
+    window.updateCartUI = function() {
+      const list = document.getElementById('cartItemsList');
+      const badge = document.getElementById('cartBadge');
+      const subtotalEl = document.getElementById('cartSubtotal');
+      const grandTotalEl = document.getElementById('cartGrandTotal');
+      const checkoutGrandTotal = document.getElementById('checkoutGrandTotal');
+      const checkoutBtn = document.getElementById('checkoutBtn');
+
+      const totalItems = window.cart.reduce((acc, item) => acc + item.qty, 0);
+      badge.innerText = totalItems;
+
+      list.innerHTML = '';
+      if (window.cart.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-12 text-slate-400">
+            <i class="fa-solid fa-basket-shopping text-4xl mb-2"></i>
+            <p class="text-sm">Your medical cart is empty</p>
+          </div>
+        `;
+        checkoutBtn.disabled = true;
+      } else {
+        checkoutBtn.disabled = false;
+        window.cart.forEach(item => {
+          const div = document.createElement('div');
+          div.className = "flex items-center justify-between border-b border-slate-100 pb-3";
+          div.innerHTML = `
+            <div class="flex items-center gap-3">
+              <img src="${item.image}" class="w-12 h-12 object-cover rounded-lg border">
+              <div>
+                <h4 class="text-xs font-bold text-slate-800 line-clamp-1">${item.title}</h4>
+                <p class="text-xs text-brand-700 font-semibold">PKR ${(item.price * item.qty).toLocaleString()}</p>
+              </div>
+            </div>
+            <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+              <button onclick="changeQty('${item.id}', -1)" class="px-2 py-1 text-slate-600 hover:bg-slate-200 text-xs font-bold">-</button>
+              <span class="px-2 text-xs font-bold text-slate-800">${item.qty}</span>
+              <button onclick="changeQty('${item.id}', 1)" class="px-2 py-1 text-slate-600 hover:bg-slate-200 text-xs font-bold">+</button>
+            </div>
+          `;
+          list.appendChild(div);
+        });
+      }
+
+      const subtotal = window.cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+      if (window.cart.length === 0) {
+        window.deliveryFee = 0;
+        document.getElementById('cartDeliveryFee').innerText = "—";
+      } else if (window.selectedCity !== 'Lahore') {
+        window.deliveryFee = 250;
+        document.getElementById('cartDeliveryFee').innerText = "PKR 250 (Intercity)";
+      } else if (subtotal > 3000) {
+        window.deliveryFee = 0;
+        document.getElementById('cartDeliveryFee').innerText = "FREE (Lahore Offer)";
+      } else {
+        window.deliveryFee = 150;
+        document.getElementById('cartDeliveryFee').innerText = "PKR 150";
+      }
+
+      const grandTotal = subtotal + (window.cart.length > 0 ? window.deliveryFee : 0);
+
+      subtotalEl.innerText = `PKR ${subtotal.toLocaleString()}`;
+      grandTotalEl.innerText = `PKR ${grandTotal.toLocaleString()}`;
+      checkoutGrandTotal.innerText = `PKR ${grandTotal.toLocaleString()}`;
+    };
+
+    window.toggleCartDrawer = function(open) {
+      const drawer = document.getElementById('cartDrawer');
+      if (open) drawer.classList.remove('hidden');
+      else drawer.classList.add('hidden');
+    };
+
+    window.openCheckoutModal = function() {
+      window.toggleCartDrawer(false);
+      document.getElementById('checkoutModal').classList.remove('hidden');
+    };
+
+    window.closeCheckoutModal = function() {
+      document.getElementById('checkoutModal').classList.add('hidden');
+    };
+
+    window.togglePaymentFields = function(type) {
+      document.getElementById('walletPrompt').classList.add('hidden');
+      if (type === 'MOBILE_WALLET') {
+        document.getElementById('walletPrompt').classList.remove('hidden');
+      }
+    };
+
+    window.updateDeliveryFeeForCity = function() {
+      window.selectedCity = document.getElementById('custCity').value;
+      window.updateCartUI();
+    };
+
+    // --- CHECKOUT & FIREBASE SAVE ---
+    window.handlePlaceOrder = async function(e) {
+      e.preventDefault();
+      if (!window.cart.length) return alert("Your cart is empty.");
+
+      const btn = document.getElementById('submitOrderBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving Order...';
+
+      const orderCode = 'LHR-' + Math.floor(100000 + Math.random() * 900000);
+      const subtotal = window.cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+      const totalAmount = subtotal + window.deliveryFee;
+
+      const orderPayload = {
+        orderId: orderCode,
+        customerName: document.getElementById('custName').value.trim(),
+        phone: document.getElementById('custPhone').value.trim(),
+        city: document.getElementById('custCity').value,
+        address: document.getElementById('custAddress').value.trim(),
+        paymentMethod: document.querySelector('input[name="paymentMethod"]:checked')?.value || 'COD',
+        walletSenderNo: document.getElementById('walletNo').value.trim() || 'N/A',
+        items: window.cart,
+        subtotal: subtotal,
+        deliveryFee: window.deliveryFee,
+        totalAmount: totalAmount,
+        status: 'Order Received',
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        await addDoc(collection(db, "orders"), orderPayload);
+
+        window.lastGeneratedOrderId = orderCode;
+        document.getElementById('generatedOrderId').innerText = orderCode;
+
+        let itemsListText = window.cart.map(i => `• ${i.title} (x${i.qty})`).join('%0A');
+        const waMsg = `*New LohariCare Order!*%0A%0A` +
+                      `*Order ID:* ${orderCode}%0A` +
+                      `*Customer:* ${orderPayload.customerName}%0A` +
+                      `*Phone:* ${orderPayload.phone}%0A` +
+                      `*City:* ${orderPayload.city}%0A` +
+                      `*Address:* ${orderPayload.address}%0A%0A` +
+                      `*Items Ordered:*%0A${itemsListText}%0A%0A` +
+                      `*Total Payable:* PKR ${totalAmount.toLocaleString()} (${orderPayload.paymentMethod})`;
+
+        document.getElementById('whatsappOrderLink').href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${waMsg}`;
+
+        window.closeCheckoutModal();
+        document.getElementById('successModal').classList.remove('hidden');
+
+        window.cart = [];
+        window.updateCartUI();
+      } catch (err) {
+        console.error("Firebase save error: ", err);
+        alert("Failed to save order. Please check your internet connection and try again.");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    };
+
+    window.copyTrackingCode = function() {
+      navigator.clipboard.writeText(window.lastGeneratedOrderId);
+      alert(`Tracking code ${window.lastGeneratedOrderId} copied!`);
+    };
+
+    window.finishOrderAndTrack = function() {
+      document.getElementById('successModal').classList.add('hidden');
+      document.getElementById('trackingInput').value = window.lastGeneratedOrderId;
+      window.scrollToSection('trackerSection');
+      window.trackOrder();
+    };
+
+    // --- LIVE TRACKING WITH FIREBASE ---
+    window.trackOrder = async function() {
+      const inputCode = document.getElementById('trackingInput').value.trim();
+      const display = document.getElementById('trackingDisplay');
+
+      if (!inputCode) return alert("Please enter an Order ID.");
+
+      display.innerHTML = '<p class="text-center text-slate-300 py-4"><i class="fa-solid fa-spinner animate-spin text-2xl"></i> Searching Firebase records...</p>';
+
+      try {
+        const q = query(collection(db, "orders"), where("orderId", "==", inputCode));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          display.innerHTML = `
+            <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-center text-red-200 text-sm">
+              <i class="fa-solid fa-circle-exclamation text-lg mb-1"></i>
+              <p>No order found matching ID: <strong>${inputCode}</strong></p>
+            </div>
+          `;
+          return;
+        }
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          display.innerHTML = `
+            <div class="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-4">
+              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-4 border-b border-white/10">
+                <div>
+                  <span class="text-xs text-slate-400">Order Reference</span>
+                  <p class="font-mono text-xl font-extrabold text-amber-400">${data.orderId}</p>
+                </div>
+                <div>
+                  <span class="text-xs text-slate-400">Current Status</span>
+                  <p class="text-sm font-bold text-emerald-400 uppercase tracking-wide"><i class="fa-solid fa-circle-dot animate-pulse mr-1"></i> ${data.status}</p>
+                </div>
+                <div>
+                  <span class="text-xs text-slate-400">Destination</span>
+                  <p class="text-sm font-semibold">${data.city}</p>
+                </div>
+              </div>
+
+              <div class="text-xs text-slate-300 space-y-1">
+                <p><strong>Customer:</strong> ${data.customerName}</p>
+                <p><strong>Total Amount:</strong> PKR ${data.totalAmount.toLocaleString()} (${data.paymentMethod})</p>
+                <p><strong>Order Date:</strong> ${new Date(data.createdAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+              </div>
+            </div>
+          `;
+        });
+      } catch (err) {
+        console.error("Tracking Error:", err);
+        display.innerHTML = `<p class="text-center text-red-400 text-sm">Error searching order. Please try again later.</p>`;
+      }
+    };
+
+    // --- HEALTH ASSISTANT CALCULATORS ---
+    window.evaluateBP = function() {
+      const sys = parseInt(document.getElementById('bpSystolic').value);
+      const dia = parseInt(document.getElementById('bpDiastolic').value);
+      const res = document.getElementById('bpResult');
+
+      if (!sys || !dia) {
+        res.innerHTML = "<span class='text-red-500'>Please enter both Systolic and Diastolic numbers.</span>";
+        return;
+      }
+
+      if (sys < 120 && dia < 80) {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>Normal Pressure</span> - Optimal range.";
+      } else if ((sys >= 120 && sys <= 129) && dia < 80) {
+        res.innerHTML = "<span class='text-amber-600 font-bold'>Elevated Pressure</span> - Pre-hypertension sign.";
+      } else if ((sys >= 130 && sys <= 139) || (dia >= 80 && dia <= 89)) {
+        res.innerHTML = "<span class='text-orange-600 font-bold'>Stage 1 Hypertension</span> - Consider consulting a physician.";
+      } else {
+        res.innerHTML = "<span class='text-red-600 font-bold'>Stage 2 High Pressure</span> - High pressure reading.";
+      }
+    };
+
+    window.calculateHydration = function() {
+      const weight = parseFloat(document.getElementById('bodyWeight').value);
+      const activity = document.getElementById('activityLevel').value;
+      const res = document.getElementById('hydrationResult');
+
+      if (!weight || weight < 10) {
+        res.innerHTML = "<span class='text-red-500'>Please enter a valid weight in kg.</span>";
+        return;
+      }
+
+      let baseLiters = weight * 0.033;
+      if (activity === 'moderate') baseLiters += 0.5;
+      if (activity === 'active') baseLiters += 1.0;
+
+      res.innerHTML = `Recommended fluid intake: <strong class='text-brand-700 text-sm'>${baseLiters.toFixed(1)} Liters</strong> (${Math.round(baseLiters * 4)} glasses/day).`;
+    };
+
+    window.scrollToSection = function(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // INITIALIZE PAGE
+    window.onload = function() {
+      document.getElementById('headerPhoneLink').href = `https://wa.me/${MY_WHATSAPP_NUMBER}`;
+      document.getElementById('footerWaBtn').href = `https://wa.me/${MY_WHATSAPP_NUMBER}`;
+      window.renderProducts();
+      window.updateCartUI();
+    };
+  </script>
+</body>
+</html>
