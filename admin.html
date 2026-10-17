@@ -53,11 +53,11 @@
     <!-- STATS ROW -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div class="bg-slate-800/60 border border-slate-800 p-5 rounded-2xl">
-        <p class="text-xs text-slate-400">Total Orders Received</p>
+        <p class="text-xs text-slate-400">Total Valid Orders</p>
         <p id="statTotalOrders" class="text-3xl font-extrabold text-white mt-1">0</p>
       </div>
       <div class="bg-slate-800/60 border border-slate-800 p-5 rounded-2xl">
-        <p class="text-xs text-slate-400">Total Store Revenue</p>
+        <p class="text-xs text-slate-400">Total Store Revenue (Excl. Cancelled)</p>
         <p id="statTotalRevenue" class="text-3xl font-extrabold text-teal-400 mt-1">PKR 0</p>
       </div>
       <div class="bg-slate-800/60 border border-slate-800 p-5 rounded-2xl">
@@ -139,9 +139,7 @@
             </tr>
           </thead>
           <tbody id="adminProductsTableBody" class="divide-y divide-slate-800">
-            <tr>
-              <td colspan="5" class="p-8 text-center text-slate-500">Loading catalog items...</td>
-            </tr>
+            <tr><td colspan="5" class="p-8 text-center text-slate-500">Loading catalog items...</td></tr>
           </tbody>
         </table>
       </div>
@@ -162,14 +160,13 @@
               <th class="p-4">Customer Details</th>
               <th class="p-4">Items Ordered</th>
               <th class="p-4">Total Amount</th>
-              <th class="p-4">Payment</th>
+              <th class="p-4">Payment & Proof</th>
               <th class="p-4">Status</th>
+              <th class="p-4 text-right">Action</th>
             </tr>
           </thead>
           <tbody id="ordersTableBody" class="divide-y divide-slate-800">
-            <tr>
-              <td colspan="6" class="p-8 text-center text-slate-500">Loading orders from Firebase...</td>
-            </tr>
+            <tr><td colspan="7" class="p-8 text-center text-slate-500">Loading orders from Firebase...</td></tr>
           </tbody>
         </table>
       </div>
@@ -182,10 +179,8 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // ADMIN PASSWORD
     const ADMIN_SECRET_PASSWORD = "azhar786";
 
-    // FIREBASE CONFIG KEYS
     const firebaseConfig = {
       apiKey: "AIzaSyBfteVKL-Z9XCRtbNaQaDm1rtySkUekxMw",
       authDomain: "loharicare.firebaseapp.com",
@@ -211,7 +206,6 @@
       }
     };
 
-    // --- ADD PRODUCT TO FIREBASE ---
     window.handleAddNewProduct = async function(e) {
       e.preventDefault();
       const btn = document.getElementById('saveProdBtn');
@@ -239,25 +233,22 @@
         window.loadAdminProducts();
       } catch (err) {
         console.error(err);
-        alert("Failed to add product. Check Firebase connection.");
+        alert("Failed to add product.");
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-plus"></i> Save Product to Firebase';
       }
     };
 
-    // --- LOAD & DELETE ADMIN PRODUCTS ---
     window.loadAdminProducts = async function() {
       const tbody = document.getElementById('adminProductsTableBody');
-      tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400"><i class="fa-solid fa-spinner animate-spin text-xl mr-2"></i> Loading catalog...</td></tr>`;
-
       try {
         const querySnapshot = await getDocs(collection(db, "products"));
         tbody.innerHTML = '';
         let count = 0;
 
         if (querySnapshot.empty) {
-          tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500">No custom products in database yet. Add one above!</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500">No custom products in database yet.</td></tr>`;
           document.getElementById('productCountLabel').innerText = `Showing 0 products`;
           return;
         }
@@ -288,31 +279,26 @@
           `;
           tbody.appendChild(tr);
         });
-
         document.getElementById('productCountLabel').innerText = `Showing ${count} products`;
       } catch (err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-400">Failed to load products.</td></tr>`;
       }
     };
 
     window.deleteProduct = async function(docId) {
-      if (!confirm("Are you sure you want to delete this product from the database?")) return;
-
+      if (!confirm("Are you sure you want to delete this product?")) return;
       try {
         await deleteDoc(doc(db, "products", docId));
-        alert("Product deleted successfully!");
         window.loadAdminProducts();
       } catch (err) {
-        console.error(err);
         alert("Failed to delete product.");
       }
     };
 
-    // --- LOAD ORDERS ---
+    // --- LOAD & MANAGE ORDERS ---
     window.loadOrders = async function() {
       const tbody = document.getElementById('ordersTableBody');
-      tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400"><i class="fa-solid fa-spinner animate-spin text-xl mr-2"></i> Fetching orders...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400"><i class="fa-solid fa-spinner animate-spin text-xl mr-2"></i> Fetching orders...</td></tr>`;
 
       try {
         const querySnapshot = await getDocs(collection(db, "orders"));
@@ -320,22 +306,36 @@
 
         let totalRev = 0;
         let pendingCount = 0;
-        let count = 0;
+        let validCount = 0;
 
         if (querySnapshot.empty) {
-          tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500">No orders placed yet.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-500">No orders placed yet.</td></tr>`;
+          document.getElementById('statTotalOrders').innerText = 0;
+          document.getElementById('statTotalRevenue').innerText = `PKR 0`;
+          document.getElementById('statPendingOrders').innerText = 0;
           return;
         }
 
         querySnapshot.forEach((documentSnapshot) => {
-          count++;
           const data = documentSnapshot.data();
           const docId = documentSnapshot.id;
           
-          totalRev += (data.totalAmount || 0);
-          if (data.status !== 'Delivered') pendingCount++;
+          // Only add to revenue if NOT cancelled
+          if (data.status !== 'Cancelled') {
+            totalRev += (data.totalAmount || 0);
+            validCount++;
+            if (data.status !== 'Delivered') pendingCount++;
+          }
 
           let itemsHtml = (data.items || []).map(i => `<div class="text-slate-300">• ${i.title} <span class="text-teal-400 font-bold">(x${i.qty})</span></div>`).join('');
+
+          let paymentHtml = `<span class="px-2 py-1 bg-slate-800 text-slate-300 rounded font-semibold text-[10px]">${data.paymentMethod}</span>`;
+          if (data.walletSenderNo && data.walletSenderNo !== 'N/A') {
+            paymentHtml += `<p class="text-[10px] text-amber-400 mt-1">Sender: ${data.walletSenderNo}</p>`;
+          }
+          if (data.paymentScreenshot && data.paymentScreenshot !== 'None') {
+            paymentHtml += `<a href="${data.paymentScreenshot}" target="_blank" class="text-[10px] text-teal-400 underline block mt-1"><i class="fa-solid fa-image"></i> View Receipt</a>`;
+          }
 
           const tr = document.createElement('tr');
           tr.className = "hover:bg-slate-800/30 transition";
@@ -350,11 +350,8 @@
               <p class="text-[11px] text-slate-400 mt-0.5">${data.city} — ${data.address}</p>
             </td>
             <td class="p-4 align-top max-w-xs">${itemsHtml}</td>
-            <td class="p-4 align-top font-bold text-white">PKR ${(data.totalAmount || 0).toLocaleString()}</td>
-            <td class="p-4 align-top">
-              <span class="px-2 py-1 bg-slate-800 text-slate-300 rounded font-semibold text-[10px]">${data.paymentMethod}</span>
-              ${data.walletSenderNo && data.walletSenderNo !== 'N/A' ? `<p class="text-[10px] text-amber-400 mt-1">Sender: ${data.walletSenderNo}</p>` : ''}
-            </td>
+            <td class="p-4 align-top font-bold ${data.status === 'Cancelled' ? 'text-slate-500 line-through' : 'text-white'}">PKR ${(data.totalAmount || 0).toLocaleString()}</td>
+            <td class="p-4 align-top">${paymentHtml}</td>
             <td class="p-4 align-top">
               <select onchange="updateOrderStatus('${docId}', this.value)" class="bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-teal-500 outline-none">
                 <option value="Order Received" ${data.status === 'Order Received' ? 'selected' : ''}>Order Received</option>
@@ -364,18 +361,22 @@
                 <option value="Cancelled" ${data.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
               </select>
             </td>
+            <td class="p-4 align-top text-right">
+              <button onclick="deleteOrder('${docId}')" class="bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition font-semibold">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
           `;
           tbody.appendChild(tr);
         });
 
-        document.getElementById('statTotalOrders').innerText = count;
+        document.getElementById('statTotalOrders').innerText = validCount;
         document.getElementById('statTotalRevenue').innerText = `PKR ${totalRev.toLocaleString()}`;
         document.getElementById('statPendingOrders').innerText = pendingCount;
-        document.getElementById('orderCountLabel').innerText = `Showing ${count} orders`;
+        document.getElementById('orderCountLabel').innerText = `Showing orders`;
 
       } catch (err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-400">Failed to load orders. Check your Firebase credentials.</td></tr>`;
       }
     };
 
@@ -383,10 +384,19 @@
       try {
         const orderRef = doc(db, "orders", id);
         await updateDoc(orderRef, { status: newStatus });
-        alert(`Order status updated to: ${newStatus}`);
+        window.loadOrders(); // Refresh table & revenue calculation instantly
       } catch (err) {
-        console.error(err);
         alert("Failed to update status.");
+      }
+    };
+
+    window.deleteOrder = async function(id) {
+      if (!confirm("Are you sure you want to delete this order from database?")) return;
+      try {
+        await deleteDoc(doc(db, "orders", id));
+        window.loadOrders(); // Refresh table & recalculate revenue
+      } catch (err) {
+        alert("Failed to delete order.");
       }
     };
   </script>
