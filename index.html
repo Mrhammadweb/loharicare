@@ -48,7 +48,7 @@
         <span class="hidden md:flex items-center gap-1.5"><i class="fa-solid fa-truck-fast text-amber-400"></i> Same-Day Express Delivery (Delivery charges are applied)</span>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" id="headerPhoneLink" target="_blank" class="hover:underline flex items-center gap-1"><i class="fa-brands fa-whatsapp text-emerald-400"></i> <span id="displayPhoneNo">+92 300 1234567</span></a>
+        <a href="#" id="headerPhoneLink" target="_blank" class="hover:underline flex items-center gap-1"><i class="fa-brands fa-whatsapp text-emerald-400"></i> <span id="displayPhoneNo">+92 321 9992695</span></a>
         <span>PKR (₨)</span>
       </div>
     </div>
@@ -333,6 +333,8 @@
     window.cart = [];
     window.deliveryFee = 150;
     window.base64Image = '';
+    window.currentCategory = 'all';
+    window.searchQuery = '';
 
     window.loadStoreProducts = async function() {
       try {
@@ -358,7 +360,19 @@
     window.renderProducts = function() {
       const grid = document.getElementById('productGrid');
       grid.innerHTML = '';
-      allProducts.forEach(p => {
+
+      const filtered = allProducts.filter(p => {
+        const matchesCategory = (window.currentCategory === 'all' || p.category === window.currentCategory);
+        const matchesSearch = p.title.toLowerCase().includes(window.searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">No medical products found matching your search.</div>`;
+        return;
+      }
+
+      filtered.forEach(p => {
         const card = document.createElement('div');
         card.className = "bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group";
         card.innerHTML = `
@@ -389,6 +403,24 @@
         `;
         grid.appendChild(card);
       });
+    };
+
+    window.filterCategory = function(cat) {
+      window.currentCategory = cat;
+      document.querySelectorAll('.category-tab').forEach(b => {
+        b.className = "category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500";
+      });
+      document.getElementById(`tab-${cat}`).className = "category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-brand-600 text-white shadow-sm";
+      window.renderProducts();
+    };
+
+    window.filterProducts = function() {
+      window.searchQuery = document.getElementById('searchInput').value;
+      window.renderProducts();
+    };
+
+    window.scrollToSection = function(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
     };
 
     window.togglePaymentFields = function(type) {
