@@ -92,7 +92,7 @@
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Category * (Select or Type Custom)</label>
           <div class="space-y-1">
-            <select id="newProdCategorySelect" onchange="checkCustomCategory(this.value)" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
+            <select id="newProdCategorySelect" onchange="checkCustomCategory(this.value, 'newProdCustomCategory')" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
               <option value="supplements">Supplements & Vitamins</option>
               <option value="milks">Formula & Nutrition Milks</option>
               <option value="devices">BP Meters & Devices</option>
@@ -191,6 +191,67 @@
 
   </div>
 
+  <!-- EDIT PRODUCT MODAL -->
+  <div id="editProductModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl text-left space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-base text-white"><i class="fa-solid fa-pen-to-square text-teal-400 mr-2"></i> Edit Product & Category</h3>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <form id="editProductForm" onsubmit="handleUpdateProduct(event)" class="space-y-3">
+        <input type="hidden" id="editProdId">
+        
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Product Title *</label>
+          <input type="text" id="editProdTitle" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Category * (Select or Type Custom)</label>
+          <select id="editProdCategorySelect" onchange="checkCustomCategory(this.value, 'editProdCustomCategory')" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none mb-1">
+            <option value="supplements">Supplements & Vitamins</option>
+            <option value="milks">Formula & Nutrition Milks</option>
+            <option value="devices">BP Meters & Devices</option>
+            <option value="surgical">Surgical & First Aid</option>
+            <option value="custom">➕ Add Custom Category...</option>
+          </select>
+          <input type="text" id="editProdCustomCategory" placeholder="Enter custom category name" class="hidden w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Selling Price (PKR) *</label>
+            <input type="number" id="editProdPrice" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Original Price (PKR)</label>
+            <input type="number" id="editProdOrigPrice" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Update Image (Optional)</label>
+          <input type="file" id="editProdImageFile" accept="image/*" onchange="previewEditProductImage(event)" class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-300">
+          <div class="mt-2 flex items-center gap-3">
+            <img id="editProdImagePreview" class="w-14 h-14 object-cover rounded-lg border border-slate-700">
+            <span class="text-[10px] text-slate-400">Leave file empty to keep current image</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">DRAP / Warranty Badge</label>
+          <input type="text" id="editProdDrap" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
+        </div>
+
+        <div class="pt-3 border-t border-slate-800 flex justify-end gap-2">
+          <button type="button" onclick="closeEditModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-semibold">Cancel</button>
+          <button type="submit" id="updateProdBtn" class="bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-2 rounded-xl text-xs transition shadow-md">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- JAVASCRIPT & FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -211,8 +272,9 @@
     const db = getFirestore(app);
 
     let newProdBase64Image = '';
+    let editProdBase64Image = '';
+    let allAdminProducts = [];
 
-    // Check if user is already logged in
     onAuthStateChanged(auth, (user) => {
       if (user) {
         document.getElementById('loginScreen').classList.add('hidden');
@@ -230,15 +292,12 @@
       const email = document.getElementById('adminEmailInput').value.trim();
       const password = document.getElementById('adminPassInput').value;
       const btn = document.getElementById('loginBtn');
-      
       btn.disabled = true;
       btn.innerText = "Signing in...";
 
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        // onAuthStateChanged will automatically show dashboard
       } catch (err) {
-        console.error(err);
         alert("Login failed: " + err.message);
         btn.disabled = false;
         btn.innerText = "Secure Login";
@@ -254,8 +313,8 @@
       }
     };
 
-    window.checkCustomCategory = function(val) {
-      const customInput = document.getElementById('newProdCustomCategory');
+    window.checkCustomCategory = function(val, inputId) {
+      const customInput = document.getElementById(inputId);
       if (val === 'custom') {
         customInput.classList.remove('hidden');
         customInput.required = true;
@@ -275,6 +334,18 @@
           const preview = document.getElementById('newProdImagePreview');
           preview.src = newProdBase64Image;
           document.getElementById('newProdImagePreviewContainer').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    window.previewEditProductImage = function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          editProdBase64Image = e.target.result;
+          document.getElementById('editProdImagePreview').src = editProdBase64Image;
         };
         reader.readAsDataURL(file);
       }
@@ -300,21 +371,19 @@
         drap: document.getElementById('newProdDrap').value.trim() || 'DRAP Verified',
         rating: 5.0,
         reviews: 1,
-        expiry: 'Exp: 2028',
         stock: 'In Stock',
         createdAt: new Date().toISOString()
       };
 
       try {
         await addDoc(collection(db, "products"), newProduct);
-        alert("Product successfully added to Firebase database!");
+        alert("Product successfully added!");
         document.getElementById('addProductForm').reset();
         document.getElementById('newProdImagePreviewContainer').classList.add('hidden');
         document.getElementById('newProdCustomCategory').classList.add('hidden');
         newProdBase64Image = '';
         window.loadAdminProducts();
       } catch (err) {
-        console.error(err);
         alert("Failed to add product.");
       } finally {
         btn.disabled = false;
@@ -327,6 +396,7 @@
       try {
         const querySnapshot = await getDocs(collection(db, "products"));
         tbody.innerHTML = '';
+        allAdminProducts = [];
         let count = 0;
 
         if (querySnapshot.empty) {
@@ -339,6 +409,7 @@
           count++;
           const data = documentSnapshot.data();
           const docId = documentSnapshot.id;
+          allAdminProducts.push({ id: docId, ...data });
 
           const tr = document.createElement('tr');
           tr.className = "hover:bg-slate-800/30 transition";
@@ -353,7 +424,10 @@
             <td class="p-4 uppercase text-[10px] font-semibold text-teal-400">${data.category}</td>
             <td class="p-4 font-bold text-white">PKR ${data.price.toLocaleString()}</td>
             <td class="p-4 text-slate-300 text-[11px]">${data.drap}</td>
-            <td class="p-4 text-right">
+            <td class="p-4 text-right space-x-1">
+              <button onclick="openEditModal('${docId}')" class="bg-amber-500/20 hover:bg-amber-500 text-amber-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition font-semibold">
+                <i class="fa-solid fa-pen mr-1"></i> Edit
+              </button>
               <button onclick="deleteProduct('${docId}')" class="bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition font-semibold">
                 <i class="fa-solid fa-trash mr-1"></i> Delete
               </button>
@@ -364,6 +438,76 @@
         document.getElementById('productCountLabel').innerText = `Showing ${count} products`;
       } catch (err) {
         console.error(err);
+      }
+    };
+
+    window.openEditModal = function(id) {
+      const p = allAdminProducts.find(item => item.id === id);
+      if (!p) return;
+
+      document.getElementById('editProdId').value = p.id;
+      document.getElementById('editProdTitle').value = p.title || '';
+      document.getElementById('editProdPrice').value = p.price || '';
+      document.getElementById('editProdOrigPrice').value = p.origPrice || '';
+      document.getElementById('editProdDrap').value = p.drap || '';
+      document.getElementById('editProdImagePreview').src = p.image || '';
+      editProdBase64Image = '';
+
+      const select = document.getElementById('editProdCategorySelect');
+      const customInput = document.getElementById('editProdCustomCategory');
+      
+      const standardCategories = ['supplements', 'milks', 'devices', 'surgical'];
+      if (standardCategories.includes(p.category)) {
+        select.value = p.category;
+        customInput.classList.add('hidden');
+        customInput.value = '';
+      } else {
+        select.value = 'custom';
+        customInput.classList.remove('hidden');
+        customInput.value = p.category;
+      }
+
+      document.getElementById('editProductModal').classList.remove('hidden');
+    };
+
+    window.closeEditModal = function() {
+      document.getElementById('editProductModal').classList.add('hidden');
+    };
+
+    window.handleUpdateProduct = async function(e) {
+      e.preventDefault();
+      const id = document.getElementById('editProdId').value;
+      const btn = document.getElementById('updateProdBtn');
+      btn.disabled = true;
+      btn.innerText = "Updating...";
+
+      let category = document.getElementById('editProdCategorySelect').value;
+      if (category === 'custom') {
+        category = document.getElementById('editProdCustomCategory').value.trim().toLowerCase().replace(/\s+/g, '-');
+      }
+
+      const updateData = {
+        title: document.getElementById('editProdTitle').value.trim(),
+        category: category,
+        price: parseFloat(document.getElementById('editProdPrice').value),
+        origPrice: parseFloat(document.getElementById('editProdOrigPrice').value) || parseFloat(document.getElementById('editProdPrice').value),
+        drap: document.getElementById('editProdDrap').value.trim() || 'DRAP Verified'
+      };
+
+      if (editProdBase64Image) {
+        updateData.image = editProdBase64Image;
+      }
+
+      try {
+        await updateDoc(doc(db, "products", id), updateData);
+        alert("Product successfully updated!");
+        window.closeEditModal();
+        window.loadAdminProducts();
+      } catch (err) {
+        alert("Failed to update product.");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Save Changes";
       }
     };
 
@@ -384,10 +528,7 @@
       try {
         const querySnapshot = await getDocs(collection(db, "orders"));
         tbody.innerHTML = '';
-
-        let totalRev = 0;
-        let pendingCount = 0;
-        let validCount = 0;
+        let totalRev = 0, pendingCount = 0, validCount = 0;
 
         if (querySnapshot.empty) {
           tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-500">No orders placed yet.</td></tr>`;
@@ -454,7 +595,6 @@
         document.getElementById('statTotalRevenue').innerText = `PKR ${totalRev.toLocaleString()}`;
         document.getElementById('statPendingOrders').innerText = pendingCount;
         document.getElementById('orderCountLabel').innerText = `Showing orders`;
-
       } catch (err) {
         console.error(err);
       }
@@ -462,8 +602,7 @@
 
     window.updateOrderStatus = async function(id, newStatus) {
       try {
-        const orderRef = doc(db, "orders", id);
-        await updateDoc(orderRef, { status: newStatus });
+        await updateDoc(doc(db, "orders", id), { status: newStatus });
         window.loadOrders();
       } catch (err) {
         alert("Failed to update status.");
