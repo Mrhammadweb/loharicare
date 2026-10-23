@@ -164,6 +164,42 @@
     </section>
   </main>
 
+  <!-- PRODUCT DETAILS MODAL -->
+  <div id="productDetailsModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+    <div onclick="closeProductModal()" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 sm:p-8 space-y-4">
+        <div class="flex justify-between items-start border-b pb-3">
+          <h3 id="modalProductTitle" class="text-xl font-bold text-slate-900 pr-4"></h3>
+          <button onclick="closeProductModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <img id="modalProductImg" class="w-full h-48 object-cover rounded-xl border border-slate-200">
+          <div class="space-y-2 text-xs text-slate-600">
+            <span id="modalProductDrap" class="inline-block bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded"></span>
+            <div id="modalStockStatus" class="font-bold"></div>
+            <div class="pt-2">
+              <span id="modalProductPrice" class="text-2xl font-extrabold text-brand-700"></span>
+              <span id="modalProductOrigPrice" class="text-xs text-slate-400 line-through ml-2"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t">
+          <h4 class="text-xs font-bold uppercase text-slate-400 mb-1">Product Description</h4>
+          <p id="modalProductDesc" class="text-xs text-slate-600 leading-relaxed max-h-32 overflow-y-auto"></p>
+        </div>
+
+        <div class="pt-3 border-t flex justify-end">
+          <button id="modalAddToCartBtn" class="bg-brand-600 hover:bg-brand-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-md">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- FOOTER -->
   <footer class="bg-slate-900 text-slate-400 text-sm border-t border-slate-800 mt-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center text-xs space-y-1">
@@ -300,9 +336,10 @@
         </div>
         <h3 class="text-2xl font-bold text-slate-900">Order Placed & Saved!</h3>
         <p class="font-mono text-2xl font-extrabold text-brand-700 my-3" id="generatedOrderId"></p>
+        <p class="text-xs text-slate-500 mb-4">WhatsApp has been opened automatically with your order receipt details.</p>
         <div class="space-y-2">
           <a id="whatsappOrderLink" href="#" target="_blank" class="block w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm shadow-md">
-            <i class="fa-brands fa-whatsapp mr-1"></i> Send Order to WhatsApp
+            <i class="fa-brands fa-whatsapp mr-1"></i> Re-open WhatsApp Receipt
           </a>
           <button onclick="location.reload()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2.5 rounded-xl text-xs">Close & Return to Store</button>
         </div>
@@ -313,7 +350,7 @@
   <!-- JAVASCRIPT & FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const MY_WHATSAPP_NUMBER = "923219992695";
 
@@ -346,9 +383,9 @@
 
         if (allProducts.length === 0) {
           allProducts = [
-            { id: "p1", title: "Evion 400mg Vitamin E Capsules", category: "supplements", price: 1250, origPrice: 1500, rating: 4.8, reviews: 142, image: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=500&auto=format&fit=crop&q=60", drap: "DRAP Reg: 004821", stock: "In Stock" },
-            { id: "p2", title: "Surbex Z Zinc + B-Complex Tablets", category: "supplements", price: 480, origPrice: 550, rating: 4.9, reviews: 310, image: "https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=500&auto=format&fit=crop&q=60", drap: "DRAP Reg: 019283", stock: "In Stock" },
-            { id: "p3", title: "Digital Automatic BP Monitor", category: "devices", price: 4850, origPrice: 6200, rating: 4.7, reviews: 89, image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60", drap: "1 Year Warranty", stock: "In Stock" }
+            { id: "p1", title: "Evion 400mg Vitamin E Capsules", category: "supplements", price: 1250, origPrice: 1500, rating: 4.8, reviews: 142, image: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=500&auto=format&fit=crop&q=60", drap: "DRAP Reg: 004821", stockQty: 15, stock: "In Stock", description: "Essential antioxidant vitamin E supplement for immunity and skin health." },
+            { id: "p2", title: "Surbex Z Zinc + B-Complex Tablets", category: "supplements", price: 480, origPrice: 550, rating: 4.9, reviews: 310, image: "https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=500&auto=format&fit=crop&q=60", drap: "DRAP Reg: 019283", stockQty: 8, stock: "In Stock", description: "Daily zinc and multi-vitamin B-complex for energy and vitality." },
+            { id: "p3", title: "Digital Automatic BP Monitor", category: "devices", price: 4850, origPrice: 6200, rating: 4.7, reviews: 89, image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60", drap: "1 Year Warranty", stockQty: 0, stock: "Out of Stock", description: "High-precision digital blood pressure monitor with automatic memory." }
           ];
         }
         window.renderProducts();
@@ -373,20 +410,27 @@
       }
 
       filtered.forEach(p => {
+        const stockQty = p.stockQty !== undefined ? p.stockQty : 10;
+        const isOutOfStock = stockQty <= 0;
+
         const card = document.createElement('div');
         card.className = "bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group";
         card.innerHTML = `
           <div>
-            <div class="relative overflow-hidden bg-slate-100 h-48">
-              <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            <div class="relative overflow-hidden bg-slate-100 h-48 cursor-pointer" onclick="openProductModal('${p.id}')">
+              <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ${isOutOfStock ? 'grayscale opacity-75' : ''}">
               <span class="absolute top-3 left-3 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-1 rounded">${p.drap || 'Verified'}</span>
+              ${isOutOfStock ? `<span class="absolute top-3 right-3 bg-red-600 text-white text-[10px] font-extrabold px-2 py-1 rounded shadow">OUT OF STOCK</span>` : ''}
             </div>
             <div class="p-4 space-y-2">
               <div class="flex items-center justify-between text-xs text-slate-500">
                 <span><i class="fa-solid fa-star text-amber-400"></i> ${p.rating || 5.0}</span>
-                <span class="text-emerald-600 font-medium">${p.stock || 'In Stock'}</span>
+                <span class="${isOutOfStock ? 'text-red-500 font-bold' : 'text-emerald-600 font-medium'}">
+                  ${isOutOfStock ? 'Out of Stock' : `${stockQty} in stock`}
+                </span>
               </div>
-              <h3 class="font-bold text-slate-800 text-sm line-clamp-2">${p.title}</h3>
+              <h3 class="font-bold text-slate-800 text-sm line-clamp-1 cursor-pointer hover:text-brand-600" onclick="openProductModal('${p.id}')">${p.title}</h3>
+              <p class="text-xs text-slate-500 line-clamp-2">${p.description || 'Quality certified health essential from Lahore wholesale pharmacy hub.'}</p>
             </div>
           </div>
           <div class="p-4 pt-0">
@@ -396,13 +440,46 @@
                 ${p.origPrice ? `<span class="text-xs text-slate-400 line-through ml-1">PKR ${Number(p.origPrice).toLocaleString()}</span>` : ''}
               </div>
             </div>
-            <button onclick="addToCart('${p.id}')" class="w-full bg-slate-100 hover:bg-brand-600 hover:text-white text-slate-800 font-semibold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-cart-plus"></i> Add to Cart
+            <button onclick="addToCart('${p.id}')" ${isOutOfStock ? 'disabled' : ''} class="w-full ${isOutOfStock ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-100 hover:bg-brand-600 hover:text-white text-slate-800'} font-semibold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-2">
+              <i class="fa-solid ${isOutOfStock ? 'fa-ban' : 'fa-cart-plus'}"></i> ${isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
             </button>
           </div>
         `;
         grid.appendChild(card);
       });
+    };
+
+    window.openProductModal = function(id) {
+      const p = allProducts.find(item => item.id === id);
+      if (!p) return;
+
+      const stockQty = p.stockQty !== undefined ? p.stockQty : 10;
+      const isOut = stockQty <= 0;
+
+      document.getElementById('modalProductTitle').innerText = p.title;
+      document.getElementById('modalProductImg').src = p.image;
+      document.getElementById('modalProductDrap').innerText = p.drap || 'DRAP Verified';
+      document.getElementById('modalProductPrice').innerText = `PKR ${Number(p.price).toLocaleString()}`;
+      document.getElementById('modalProductOrigPrice').innerText = p.origPrice ? `PKR ${Number(p.origPrice).toLocaleString()}` : '';
+      document.getElementById('modalProductDesc').innerText = p.description || 'Certified pharmaceutical product direct from Lohari wholesale supply network.';
+      
+      const stockEl = document.getElementById('modalStockStatus');
+      stockEl.innerText = isOut ? 'Out of Stock' : `Available: ${stockQty} units`;
+      stockEl.className = isOut ? 'text-red-500 font-bold' : 'text-emerald-600 font-bold';
+
+      const btn = document.getElementById('modalAddToCartBtn');
+      btn.disabled = isOut;
+      btn.className = isOut ? 'bg-slate-300 text-slate-500 px-6 py-2.5 rounded-xl text-xs font-bold cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-md';
+      btn.onclick = function() {
+        window.addToCart(p.id);
+        window.closeProductModal();
+      };
+
+      document.getElementById('productDetailsModal').classList.remove('hidden');
+    };
+
+    window.closeProductModal = function() {
+      document.getElementById('productDetailsModal').classList.add('hidden');
     };
 
     window.filterCategory = function(cat) {
@@ -450,16 +527,29 @@
 
     window.addToCart = function(id) {
       const p = allProducts.find(item => item.id === id);
+      const stockQty = p.stockQty !== undefined ? p.stockQty : 10;
+      if (stockQty <= 0) return alert("Item is currently out of stock!");
+
       const existing = window.cart.find(item => item.id === id);
-      if (existing) existing.qty += 1;
-      else window.cart.push({ ...p, qty: 1 });
+      if (existing) {
+        if (existing.qty >= stockQty) return alert(`Maximum available stock (${stockQty}) reached.`);
+        existing.qty += 1;
+      } else {
+        window.cart.push({ ...p, qty: 1 });
+      }
       window.updateCartUI();
       window.toggleCartDrawer(true);
     };
 
     window.changeQty = function(id, delta) {
       const item = window.cart.find(i => i.id === id);
+      const p = allProducts.find(prod => prod.id === id);
+      const stockQty = p && p.stockQty !== undefined ? p.stockQty : 99;
+
       if (item) {
+        if (delta > 0 && item.qty >= stockQty) {
+          return alert(`Cannot add more than available stock (${stockQty}).`);
+        }
         item.qty += delta;
         if (item.qty <= 0) window.cart = window.cart.filter(i => i.id !== id);
       }
@@ -548,11 +638,30 @@
 
       try {
         await addDoc(collection(db, "orders"), order);
+
+        // Deduct inventory quantities in Firebase
+        for (const item of window.cart) {
+          const productRef = doc(db, "products", item.id);
+          const currentProd = allProducts.find(p => p.id === item.id);
+          if (currentProd) {
+            const newQty = Math.max(0, (currentProd.stockQty || 10) - item.qty);
+            await updateDoc(productRef, {
+              stockQty: newQty,
+              stock: newQty > 0 ? `${newQty} in stock` : 'Out of Stock'
+            });
+          }
+        }
+
         document.getElementById('generatedOrderId').innerText = code;
 
         let itemsText = window.cart.map(i => `• ${i.title} (x${i.qty})`).join('%0A');
-        const waMsg = `*New A2Z LifeCare Order!*%0AOrder ID: ${code}%0ACustomer: ${order.customerName}%0APayment: ${paymentMethod}%0ATotal: PKR ${total.toLocaleString()} (Incl. Delivery)%0AItems:%0A${itemsText}`;
-        document.getElementById('whatsappOrderLink').href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${waMsg}`;
+        const waMsg = `*New A2Z LifeCare Order!*%0AOrder ID: ${code}%0ACustomer: ${order.customerName}%0APhone: ${order.phone}%0ACity: ${order.city}%0AAddress: ${order.address}%0APayment: ${paymentMethod}%0ATotal: PKR ${total.toLocaleString()} (Incl. Delivery)%0A%0A*Items Ordered:*%0A${itemsText}`;
+        const waUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${waMsg}`;
+        
+        document.getElementById('whatsappOrderLink').href = waUrl;
+
+        // Automatically trigger WhatsApp redirect in a new tab
+        window.open(waUrl, '_blank');
 
         window.closeCheckoutModal();
         document.getElementById('successModal').classList.remove('hidden');
