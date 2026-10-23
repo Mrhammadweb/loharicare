@@ -104,6 +104,11 @@
         </div>
 
         <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Stock Quantity *</label>
+          <input type="number" id="newProdStockQty" min="0" required placeholder="e.g. 25 (Set 0 for Out of Stock)" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
+        </div>
+
+        <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Selling Price (PKR) *</label>
           <input type="number" id="newProdPrice" required placeholder="e.g. 500" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
@@ -114,16 +119,21 @@
         </div>
 
         <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">DRAP / Warranty Badge</label>
+          <input type="text" id="newProdDrap" placeholder="e.g. DRAP Reg: 00129" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
+        </div>
+
+        <div class="sm:col-span-2 lg:col-span-3">
+          <label class="block text-xs font-medium text-slate-400 mb-1">Product Description</label>
+          <textarea id="newProdDesc" rows="2" placeholder="Provide product benefits, dosage, or instructions..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none"></textarea>
+        </div>
+
+        <div class="sm:col-span-2 lg:col-span-3">
           <label class="block text-xs font-medium text-slate-400 mb-1">Upload Product Image *</label>
           <input type="file" id="newProdImageFile" accept="image/*" onchange="previewNewProductImage(event)" required class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-300">
           <div id="newProdImagePreviewContainer" class="mt-2 hidden">
             <img id="newProdImagePreview" class="w-16 h-16 object-cover rounded-lg border border-slate-700 shadow-sm">
           </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">DRAP / Warranty Badge</label>
-          <input type="text" id="newProdDrap" placeholder="e.g. DRAP Reg: 00129" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
         <div class="sm:col-span-2 lg:col-span-3 flex justify-end">
@@ -150,13 +160,14 @@
             <tr>
               <th class="p-4">Product Details</th>
               <th class="p-4">Category</th>
+              <th class="p-4">Stock</th>
               <th class="p-4">Price</th>
               <th class="p-4">Badge / DRAP</th>
               <th class="p-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody id="adminProductsTableBody" class="divide-y divide-slate-800">
-            <tr><td colspan="5" class="p-8 text-center text-slate-500">Loading catalog items...</td></tr>
+            <tr><td colspan="6" class="p-8 text-center text-slate-500">Loading catalog items...</td></tr>
           </tbody>
         </table>
       </div>
@@ -193,9 +204,9 @@
 
   <!-- EDIT PRODUCT MODAL -->
   <div id="editProductModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 hidden">
-    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl text-left space-y-4">
+    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl text-left space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-base text-white"><i class="fa-solid fa-pen-to-square text-teal-400 mr-2"></i> Edit Product & Category</h3>
+        <h3 class="font-bold text-base text-white"><i class="fa-solid fa-pen-to-square text-teal-400 mr-2"></i> Edit Product & Stock</h3>
         <button onclick="closeEditModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
@@ -219,6 +230,11 @@
           <input type="text" id="editProdCustomCategory" placeholder="Enter custom category name" class="hidden w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Stock Quantity *</label>
+          <input type="number" id="editProdStockQty" min="0" required placeholder="e.g. 10 (Set 0 for Out of Stock)" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
+        </div>
+
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">Selling Price (PKR) *</label>
@@ -228,6 +244,11 @@
             <label class="block text-xs font-medium text-slate-400 mb-1">Original Price (PKR)</label>
             <input type="number" id="editProdOrigPrice" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Product Description</label>
+          <textarea id="editProdDesc" rows="2" placeholder="Product details..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none"></textarea>
         </div>
 
         <div>
@@ -362,16 +383,20 @@
         category = document.getElementById('newProdCustomCategory').value.trim().toLowerCase().replace(/\s+/g, '-');
       }
 
+      const stockQty = parseInt(document.getElementById('newProdStockQty').value) || 0;
+
       const newProduct = {
         title: document.getElementById('newProdTitle').value.trim(),
         category: category,
+        stockQty: stockQty,
+        stock: stockQty > 0 ? `${stockQty} in stock` : 'Out of Stock',
+        description: document.getElementById('newProdDesc').value.trim(),
         price: parseFloat(document.getElementById('newProdPrice').value),
         origPrice: parseFloat(document.getElementById('newProdOrigPrice').value) || parseFloat(document.getElementById('newProdPrice').value),
         image: newProdBase64Image || 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=500',
         drap: document.getElementById('newProdDrap').value.trim() || 'DRAP Verified',
         rating: 5.0,
         reviews: 1,
-        stock: 'In Stock',
         createdAt: new Date().toISOString()
       };
 
@@ -400,7 +425,7 @@
         let count = 0;
 
         if (querySnapshot.empty) {
-          tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500">No custom products in database yet.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500">No custom products in database yet.</td></tr>`;
           document.getElementById('productCountLabel').innerText = `Showing 0 products`;
           return;
         }
@@ -411,6 +436,9 @@
           const docId = documentSnapshot.id;
           allAdminProducts.push({ id: docId, ...data });
 
+          const qty = data.stockQty !== undefined ? data.stockQty : 10;
+          const isOut = qty <= 0;
+
           const tr = document.createElement('tr');
           tr.className = "hover:bg-slate-800/30 transition";
           tr.innerHTML = `
@@ -418,10 +446,15 @@
               <img src="${data.image}" class="w-10 h-10 object-cover rounded-lg border border-slate-700">
               <div>
                 <p class="font-bold text-white text-sm line-clamp-1">${data.title}</p>
-                <p class="text-[10px] text-slate-400">ID: ${docId}</p>
+                <p class="text-[10px] text-slate-400 line-clamp-1">${data.description || 'No description'}</p>
               </div>
             </td>
             <td class="p-4 uppercase text-[10px] font-semibold text-teal-400">${data.category}</td>
+            <td class="p-4">
+              <span class="px-2 py-1 rounded text-[10px] font-bold ${isOut ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}">
+                ${isOut ? 'Out of Stock (0)' : `${qty} units`}
+              </span>
+            </td>
             <td class="p-4 font-bold text-white">PKR ${data.price.toLocaleString()}</td>
             <td class="p-4 text-slate-300 text-[11px]">${data.drap}</td>
             <td class="p-4 text-right space-x-1">
@@ -447,8 +480,10 @@
 
       document.getElementById('editProdId').value = p.id;
       document.getElementById('editProdTitle').value = p.title || '';
+      document.getElementById('editProdStockQty').value = p.stockQty !== undefined ? p.stockQty : 10;
       document.getElementById('editProdPrice').value = p.price || '';
       document.getElementById('editProdOrigPrice').value = p.origPrice || '';
+      document.getElementById('editProdDesc').value = p.description || '';
       document.getElementById('editProdDrap').value = p.drap || '';
       document.getElementById('editProdImagePreview').src = p.image || '';
       editProdBase64Image = '';
@@ -486,9 +521,14 @@
         category = document.getElementById('editProdCustomCategory').value.trim().toLowerCase().replace(/\s+/g, '-');
       }
 
+      const stockQty = parseInt(document.getElementById('editProdStockQty').value) || 0;
+
       const updateData = {
         title: document.getElementById('editProdTitle').value.trim(),
         category: category,
+        stockQty: stockQty,
+        stock: stockQty > 0 ? `${stockQty} in stock` : 'Out of Stock',
+        description: document.getElementById('editProdDesc').value.trim(),
         price: parseFloat(document.getElementById('editProdPrice').value),
         origPrice: parseFloat(document.getElementById('editProdOrigPrice').value) || parseFloat(document.getElementById('editProdPrice').value),
         drap: document.getElementById('editProdDrap').value.trim() || 'DRAP Verified'
@@ -593,7 +633,7 @@
 
         document.getElementById('statTotalOrders').innerText = validCount;
         document.getElementById('statTotalRevenue').innerText = `PKR ${totalRev.toLocaleString()}`;
-        document.getElementById('statPendingOrders').innerText = pendingCount;
+        document.getElementById('statPendingOrders').innerText = 0;
         document.getElementById('orderCountLabel').innerText = `Showing orders`;
       } catch (err) {
         console.error(err);
