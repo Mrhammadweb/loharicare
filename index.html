@@ -361,7 +361,7 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT & FIREBASE -->
+ <!-- JAVASCRIPT & FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -410,9 +410,9 @@
 
     window.renderProducts = function() {
       const grid = document.getElementById('productGrid');
+      if (!grid) return;
       grid.innerHTML = '';
 
-      // SORTING FIX: Pinned products (isPinned == true) are pushed to the very top
       const sortedProducts = [...allProducts].sort((a, b) => {
         const pinA = a.isPinned ? 1 : 0;
         const pinB = b.isPinned ? 1 : 0;
@@ -586,6 +586,8 @@
       const checkoutTotal = document.getElementById('checkoutGrandTotal');
       const checkoutBtn = document.getElementById('checkoutBtn');
 
+      if (!badge || !list) return;
+
       badge.innerText = window.cart.reduce((a, c) => a + c.qty, 0);
       list.innerHTML = '';
 
@@ -719,8 +721,12 @@
 
     window.onload = function() {
       const formattedPhone = "+" + MY_WHATSAPP_NUMBER.replace(/(\d{2})(\d{3})(\d{7})/, "$1 $2 $3");
-      document.getElementById('headerPhoneLink').href = `https://wa.me/${MY_WHATSAPP_NUMBER}`;
-      document.getElementById('displayPhoneNo').innerText = formattedPhone;
+      const phoneLink = document.getElementById('headerPhoneLink');
+      const displayNo = document.getElementById('displayPhoneNo');
+      
+      if (phoneLink) phoneLink.href = `https://wa.me/${MY_WHATSAPP_NUMBER}`;
+      if (displayNo) displayNo.innerText = formattedPhone;
+      
       window.loadStoreProducts();
     };
   </script>
