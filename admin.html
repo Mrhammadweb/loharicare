@@ -10,10 +10,9 @@
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
 
-  <!-- AUDIO NOTIFICATION SOUND (FREE SOUND EFFECT) -->
   <audio id="orderNotificationSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
-  <!-- FIREBASE AUTH LOGIN SCREEN -->
+  <!-- LOGIN SCREEN -->
   <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 p-4">
     <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl max-w-sm w-full shadow-2xl text-center">
       <div class="w-12 h-12 bg-teal-500/20 text-teal-400 rounded-xl flex items-center justify-center mx-auto mb-4 text-xl">
@@ -38,7 +37,7 @@
     </div>
   </div>
 
-  <!-- MAIN ADMIN DASHBOARD -->
+  <!-- MAIN DASHBOARD -->
   <div id="adminDashboard" class="hidden max-w-7xl mx-auto px-4 py-8 space-y-10">
     
     <!-- HEADER -->
@@ -82,7 +81,7 @@
       </div>
     </div>
 
-    <!-- SECTION 1: ADD NEW PRODUCT -->
+    <!-- ADD PRODUCT -->
     <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 shadow-xl">
       <div class="flex items-center gap-2 mb-4">
         <i class="fa-solid fa-circle-plus text-teal-400"></i>
@@ -111,7 +110,7 @@
 
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Stock Quantity *</label>
-          <input type="number" id="newProdStockQty" min="0" required placeholder="e.g. 25 (Set 0 for Out of Stock)" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
+          <input type="number" id="newProdStockQty" min="0" required placeholder="e.g. 25" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
         <div>
@@ -120,7 +119,7 @@
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Original / Strikethrough Price (PKR)</label>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Original Price (PKR)</label>
           <input type="number" id="newProdOrigPrice" placeholder="e.g. 600" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
@@ -131,7 +130,14 @@
 
         <div class="sm:col-span-2 lg:col-span-3">
           <label class="block text-xs font-medium text-slate-400 mb-1">Product Description</label>
-          <textarea id="newProdDesc" rows="2" placeholder="Provide product benefits, dosage, or instructions..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none"></textarea>
+          <textarea id="newProdDesc" rows="2" placeholder="Provide product details..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none"></textarea>
+        </div>
+
+        <div class="sm:col-span-2 lg:col-span-3 flex items-center gap-3">
+          <input type="checkbox" id="newProdPinned" class="w-4 h-4 text-teal-600 rounded bg-slate-800 border-slate-700 focus:ring-teal-500">
+          <label for="newProdPinned" class="text-xs font-bold text-amber-400 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-thumbtack"></i> Pin this product to the top (Trending Product)
+          </label>
         </div>
 
         <div class="sm:col-span-2 lg:col-span-3">
@@ -150,7 +156,7 @@
       </form>
     </div>
 
-    <!-- SECTION 2: MANAGE & DELETE PRODUCTS -->
+    <!-- MANAGE PRODUCTS TABLE -->
     <div class="bg-slate-800/40 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
       <div class="p-4 border-b border-slate-800 flex justify-between items-center">
         <div class="flex items-center gap-2">
@@ -168,7 +174,7 @@
               <th class="p-4">Category</th>
               <th class="p-4">Stock</th>
               <th class="p-4">Price</th>
-              <th class="p-4">Badge / DRAP</th>
+              <th class="p-4">Pinned Status</th>
               <th class="p-4 text-right">Actions</th>
             </tr>
           </thead>
@@ -179,7 +185,7 @@
       </div>
     </div>
 
-    <!-- SECTION 3: ORDERS TABLE -->
+    <!-- ORDERS TABLE -->
     <div class="bg-slate-800/40 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
       <div class="p-4 border-b border-slate-800 flex justify-between items-center">
         <div class="flex items-center gap-2">
@@ -241,7 +247,7 @@
 
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Stock Quantity *</label>
-          <input type="number" id="editProdStockQty" min="0" required placeholder="e.g. 10 (Set 0 for Out of Stock)" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
+          <input type="number" id="editProdStockQty" min="0" required placeholder="e.g. 10" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -258,6 +264,13 @@
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Product Description</label>
           <textarea id="editProdDesc" rows="2" placeholder="Product details..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-teal-500 outline-none"></textarea>
+        </div>
+
+        <div class="flex items-center gap-3 py-1">
+          <input type="checkbox" id="editProdPinned" class="w-4 h-4 text-teal-600 rounded bg-slate-800 border-slate-700 focus:ring-teal-500">
+          <label for="editProdPinned" class="text-xs font-bold text-amber-400 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-thumbtack"></i> Pin this product to top (Trending Product)
+          </label>
         </div>
 
         <div>
@@ -286,7 +299,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBfteVKL-Z9XCRtbNaQaDm1rtySkUekxMw",
@@ -305,7 +318,6 @@
     let editProdBase64Image = '';
     let allAdminProducts = [];
     let initialOrderLoad = true;
-    let audioAllowed = false;
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -324,7 +336,6 @@
       audio.play().then(() => {
         audio.pause();
         audio.currentTime = 0;
-        audioAllowed = true;
         const badge = document.getElementById('liveSoundBadge');
         badge.className = "bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-1 rounded-full font-semibold flex items-center gap-1";
         badge.innerHTML = '<i class="fa-solid fa-volume-high"></i> Sound Alerts Active';
@@ -414,6 +425,7 @@
         stockQty: stockQty,
         stock: stockQty > 0 ? `${stockQty} in stock` : 'Out of Stock',
         description: document.getElementById('newProdDesc').value.trim(),
+        isPinned: document.getElementById('newProdPinned').checked,
         price: parseFloat(document.getElementById('newProdPrice').value),
         origPrice: parseFloat(document.getElementById('newProdOrigPrice').value) || parseFloat(document.getElementById('newProdPrice').value),
         image: newProdBase64Image || 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=500',
@@ -461,6 +473,7 @@
 
           const qty = data.stockQty !== undefined ? data.stockQty : 10;
           const isOut = qty <= 0;
+          const isPinned = data.isPinned || false;
 
           const tr = document.createElement('tr');
           tr.className = "hover:bg-slate-800/30 transition";
@@ -479,7 +492,11 @@
               </span>
             </td>
             <td class="p-4 font-bold text-white">PKR ${data.price.toLocaleString()}</td>
-            <td class="p-4 text-slate-300 text-[11px]">${data.drap}</td>
+            <td class="p-4">
+              <button onclick="togglePinProduct('${docId}', ${!isPinned})" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 ${isPinned ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-800 text-slate-400 hover:text-white'}">
+                <i class="fa-solid fa-thumbtack"></i> ${isPinned ? 'Pinned (Top)' : 'Normal'}
+              </button>
+            </td>
             <td class="p-4 text-right space-x-1">
               <button onclick="openEditModal('${docId}')" class="bg-amber-500/20 hover:bg-amber-500 text-amber-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition font-semibold">
                 <i class="fa-solid fa-pen mr-1"></i> Edit
@@ -497,6 +514,15 @@
       }
     };
 
+    window.togglePinProduct = async function(id, status) {
+      try {
+        await updateDoc(doc(db, "products", id), { isPinned: status });
+        window.loadAdminProducts();
+      } catch (err) {
+        alert("Failed to toggle pin status.");
+      }
+    };
+
     window.openEditModal = function(id) {
       const p = allAdminProducts.find(item => item.id === id);
       if (!p) return;
@@ -508,6 +534,7 @@
       document.getElementById('editProdOrigPrice').value = p.origPrice || '';
       document.getElementById('editProdDesc').value = p.description || '';
       document.getElementById('editProdDrap').value = p.drap || '';
+      document.getElementById('editProdPinned').checked = p.isPinned || false;
       document.getElementById('editProdImagePreview').src = p.image || '';
       editProdBase64Image = '';
 
@@ -552,6 +579,7 @@
         stockQty: stockQty,
         stock: stockQty > 0 ? `${stockQty} in stock` : 'Out of Stock',
         description: document.getElementById('editProdDesc').value.trim(),
+        isPinned: document.getElementById('editProdPinned').checked,
         price: parseFloat(document.getElementById('editProdPrice').value),
         origPrice: parseFloat(document.getElementById('editProdOrigPrice').value) || parseFloat(document.getElementById('editProdPrice').value),
         drap: document.getElementById('editProdDrap').value.trim() || 'DRAP Verified'
@@ -584,7 +612,6 @@
       }
     };
 
-    // REALTIME FIRESTORE LISTENER FOR INSTANT SOUND & NOTIFICATIONS
     window.initRealtimeOrders = function() {
       const tbody = document.getElementById('ordersTableBody');
       const ordersRef = collection(db, "orders");
@@ -592,10 +619,8 @@
       onSnapshot(ordersRef, (snapshot) => {
         let totalRev = 0, pendingCount = 0, validCount = 0;
         
-        // Check for new added orders after initial load
         snapshot.docChanges().forEach((change) => {
           if (change.type === "added" && !initialOrderLoad) {
-            // Play notification sound
             const audio = document.getElementById('orderNotificationSound');
             if (audio) {
               audio.currentTime = 0;
