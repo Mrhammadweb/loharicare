@@ -53,19 +53,19 @@
     </div>
   </div>
 
-  <!-- MAIN HEADER -->
+  <!-- MAIN HEADER WITH BRAND LOGO -->
   <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20 gap-4">
         
-        <!-- BRAND LOGO & TAGLINE -->
+        <!-- BRAND LOGO -->
         <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-  <img src="logo.png.png" alt="A2Z LifeCare Logo" class="h-12 sm:h-14 w-auto object-contain rounded-lg">
-  <div class="hidden sm:block border-l border-slate-200 pl-3">
-    <span class="bg-brand-100 text-brand-800 text-xs px-2 py-0.5 rounded font-semibold border border-brand-500/20">DIRECT</span>
-    <p class="text-[11px] text-slate-500 font-medium mt-0.5">Better Health • Brighter Tomorrow</p>
-  </div>
-</div>
+          <img src="logo.png.png" alt="A2Z LifeCare Logo" class="h-12 sm:h-14 w-auto object-contain rounded-lg">
+          <div class="hidden sm:block border-l border-slate-200 pl-3">
+            <span class="bg-brand-100 text-brand-800 text-xs px-2 py-0.5 rounded font-semibold border border-brand-500/20">DIRECT</span>
+            <p class="text-[11px] text-slate-500 font-medium mt-0.5">Better Health • Brighter Tomorrow</p>
+          </div>
+        </div>
 
         <!-- LIVE SEARCH BAR -->
         <div class="flex-1 max-w-xl mx-2 hidden md:block">
@@ -356,7 +356,7 @@
     </div>
   </div>
 
- <!-- JAVASCRIPT & FIREBASE -->
+  <!-- JAVASCRIPT & FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -383,6 +383,7 @@
     window.searchQuery = '';
 
     window.loadStoreProducts = async function() {
+      const grid = document.getElementById('productGrid');
       try {
         const querySnapshot = await getDocs(collection(db, "products"));
         allProducts = [];
@@ -390,16 +391,12 @@
           allProducts.push({ id: docSnap.id, ...docSnap.data() });
         });
 
-        if (allProducts.length === 0) {
-          allProducts = [
-            { id: "p1", title: "Evion 400mg Vitamin E Capsules", category: "supplements", price: 1250, origPrice: 1500, rating: 4.8, reviews: 142, image: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=500&auto=format&fit=crop&q=60", drap: "DRAP Reg: 004821", stockQty: 15, stock: "In Stock", description: "Essential antioxidant vitamin E supplement.", isPinned: true },
-            { id: "p2", title: "Surbex Z Zinc + B-Complex Tablets", category: "supplements", price: 480, origPrice: 550, rating: 4.9, reviews: 310, image: "https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=500&auto=format&fit=crop&q=60", drap: "DRAP Reg: 019283", stockQty: 8, stock: "In Stock", description: "Daily zinc and multi-vitamin B-complex.", isPinned: false },
-            { id: "p3", title: "Digital Automatic BP Monitor", category: "devices", price: 4850, origPrice: 6200, rating: 4.7, reviews: 89, image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60", drap: "1 Year Warranty", stockQty: 0, stock: "Out of Stock", description: "High-precision digital BP monitor.", isPinned: false }
-          ];
-        }
         window.renderProducts();
       } catch (err) {
         console.error("Error loading products:", err);
+        if (grid) {
+          grid.innerHTML = `<div class="col-span-full text-center py-12 text-red-500 font-bold">Failed to connect to database. Please check your internet connection.</div>`;
+        }
       }
     };
 
@@ -408,6 +405,7 @@
       if (!grid) return;
       grid.innerHTML = '';
 
+      // SORTING FIX: Pinned products (isPinned == true) stay at the top
       const sortedProducts = [...allProducts].sort((a, b) => {
         const pinA = a.isPinned ? 1 : 0;
         const pinB = b.isPinned ? 1 : 0;
@@ -421,7 +419,7 @@
       });
 
       if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">No medical products found matching your search.</div>`;
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 font-medium">No medical products found matching your catalog search.</div>`;
         return;
       }
 
