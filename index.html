@@ -39,17 +39,16 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between antialiased">
 
-  <!-- TOP ANNOUNCEMENT BAR -->
+  <!-- TOP ANNOUNCEMENT BAR WITH BULK ORDER TAGLINE -->
   <div class="bg-brand-900 text-white text-xs py-2 px-4">
     <div class="max-w-7xl mx-auto flex justify-between items-center flex-wrap gap-2">
       <div class="flex items-center gap-4">
-        <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-teal-400"></i> Sourced Direct from Certified Medical Hubs, Lahore</span>
+        <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-teal-400"></i> Certified Medical Hubs, Lahore</span>
         <span class="hidden md:inline text-brand-100">|</span>
-        <span class="hidden md:flex items-center gap-1.5"><i class="fa-solid fa-truck-fast text-amber-400"></i> Same-Day Express Delivery (Delivery charges are applied)</span>
+        <span class="flex items-center gap-1.5 text-amber-300 font-semibold"><i class="fa-solid fa-boxes-packing text-amber-400"></i> Buying for Clinics or Pharmacies? Special Wholesale Discounts on Bulk Orders!</span>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" id="headerPhoneLink" target="_blank" class="hover:underline flex items-center gap-1"><i class="fa-brands fa-whatsapp text-emerald-400"></i> <span id="displayPhoneNo">+92 321 9992695</span></a>
-        <span>PKR (₨)</span>
+        <a href="https://wa.me/923219992695?text=Hi%20A2Z%20LifeCare,%20I%20want%20to%20inquire%20about%20a%20bulk%20order." target="_blank" class="hover:underline flex items-center gap-1 font-bold text-emerald-300"><i class="fa-brands fa-whatsapp text-emerald-400"></i> Bulk Inquiry</a>
       </div>
     </div>
   </div>
@@ -125,6 +124,22 @@
   <!-- PRODUCT CATALOG SECTION -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
     
+    <!-- BULK ORDER BANNER -->
+    <div class="bg-gradient-to-r from-teal-900 via-brand-800 to-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-lg border border-teal-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-lg shrink-0">
+          <i class="fa-solid fa-truck-ramp-box"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-sm sm:text-base text-amber-300">Ordering for a Clinic, Hospital, or Wholesale Shop?</h3>
+          <p class="text-xs text-slate-300">Get customized tier pricing and priority dispatch for all bulk inquiries.</p>
+        </div>
+      </div>
+      <a href="https://wa.me/923219992695?text=Hi%20A2Z%20LifeCare,%20I%20am%20interested%20in%20placing%20a%20bulk%20order." target="_blank" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs transition shadow-md whitespace-nowrap flex items-center gap-2">
+        <i class="fa-brands fa-whatsapp text-sm"></i> Request Bulk Quote
+      </a>
+    </div>
+
     <!-- CATEGORY TABS -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
       <div>
@@ -289,7 +304,6 @@
               </label>
             </div>
 
-            <!-- WALLET DETAILS & UPLOAD BOX -->
             <div id="walletPrompt" class="hidden p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs space-y-3">
               <div class="bg-white p-3 rounded-lg border border-amber-200 space-y-1">
                 <p class="font-bold text-slate-900 text-sm"><i class="fa-solid fa-building-columns text-amber-600 mr-1"></i> Transfer Payment To:</p>
@@ -383,9 +397,9 @@
 
         if (allProducts.length === 0) {
           allProducts = [
-            { id: "p1", title: "Evion 400mg Vitamin E Capsules", category: "supplements", price: 1250, origPrice: 1500, rating: 4.8, reviews: 142, image: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=500&auto=format&fit=crop&q=60", drap: "DRAP Reg: 004821", stockQty: 15, stock: "In Stock", description: "Essential antioxidant vitamin E supplement for immunity and skin health." },
-            { id: "p2", title: "Surbex Z Zinc + B-Complex Tablets", category: "supplements", price: 480, origPrice: 550, rating: 4.9, reviews: 310, image: "https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=500&auto=format&fit=crop&q=60", drap: "DRAP Reg: 019283", stockQty: 8, stock: "In Stock", description: "Daily zinc and multi-vitamin B-complex for energy and vitality." },
-            { id: "p3", title: "Digital Automatic BP Monitor", category: "devices", price: 4850, origPrice: 6200, rating: 4.7, reviews: 89, image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60", drap: "1 Year Warranty", stockQty: 0, stock: "Out of Stock", description: "High-precision digital blood pressure monitor with automatic memory." }
+            { id: "p1", title: "Evion 400mg Vitamin E Capsules", category: "supplements", price: 1250, origPrice: 1500, rating: 4.8, reviews: 142, image: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=500&auto=format&fit=crop&q=60", drap: "DRAP Reg: 004821", stockQty: 15, stock: "In Stock", description: "Essential antioxidant vitamin E supplement.", isPinned: true },
+            { id: "p2", title: "Surbex Z Zinc + B-Complex Tablets", category: "supplements", price: 480, origPrice: 550, rating: 4.9, reviews: 310, image: "https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=500&auto=format&fit=crop&q=60", drap: "DRAP Reg: 019283", stockQty: 8, stock: "In Stock", description: "Daily zinc and multi-vitamin B-complex.", isPinned: false },
+            { id: "p3", title: "Digital Automatic BP Monitor", category: "devices", price: 4850, origPrice: 6200, rating: 4.7, reviews: 89, image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60", drap: "1 Year Warranty", stockQty: 0, stock: "Out of Stock", description: "High-precision digital BP monitor.", isPinned: false }
           ];
         }
         window.renderProducts();
@@ -398,7 +412,14 @@
       const grid = document.getElementById('productGrid');
       grid.innerHTML = '';
 
-      const filtered = allProducts.filter(p => {
+      // SORTING FIX: Pinned products (isPinned == true) are pushed to the very top
+      const sortedProducts = [...allProducts].sort((a, b) => {
+        const pinA = a.isPinned ? 1 : 0;
+        const pinB = b.isPinned ? 1 : 0;
+        return pinB - pinA;
+      });
+
+      const filtered = sortedProducts.filter(p => {
         const matchesCategory = (window.currentCategory === 'all' || p.category === window.currentCategory);
         const matchesSearch = p.title.toLowerCase().includes(window.searchQuery.toLowerCase());
         return matchesCategory && matchesSearch;
@@ -414,12 +435,14 @@
         const isOutOfStock = stockQty <= 0;
 
         const card = document.createElement('div');
-        card.className = "bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group";
+        card.className = `bg-white rounded-2xl border ${p.isPinned ? 'border-amber-400 ring-2 ring-amber-400/30' : 'border-slate-200'} overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group relative`;
         card.innerHTML = `
           <div>
             <div class="relative overflow-hidden bg-slate-100 h-48 cursor-pointer" onclick="openProductModal('${p.id}')">
               <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ${isOutOfStock ? 'grayscale opacity-75' : ''}">
               <span class="absolute top-3 left-3 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-1 rounded">${p.drap || 'Verified'}</span>
+              
+              ${p.isPinned ? `<span class="absolute top-3 right-3 bg-amber-500 text-slate-950 text-[10px] font-extrabold px-2 py-1 rounded shadow flex items-center gap-1"><i class="fa-solid fa-fire text-red-600"></i> TRENDING</span>` : ''}
               ${isOutOfStock ? `<span class="absolute top-3 right-3 bg-red-600 text-white text-[10px] font-extrabold px-2 py-1 rounded shadow">OUT OF STOCK</span>` : ''}
             </div>
             <div class="p-4 space-y-2">
@@ -639,7 +662,6 @@
       try {
         await addDoc(collection(db, "orders"), order);
 
-        // Deduct inventory quantities in Firebase
         for (const item of window.cart) {
           const productRef = doc(db, "products", item.id);
           const currentProd = allProducts.find(p => p.id === item.id);
@@ -659,8 +681,6 @@
         const waUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${waMsg}`;
         
         document.getElementById('whatsappOrderLink').href = waUrl;
-
-        // Automatically trigger WhatsApp redirect in a new tab
         window.open(waUrl, '_blank');
 
         window.closeCheckoutModal();
