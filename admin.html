@@ -299,7 +299,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBfteVKL-Z9XCRtbNaQaDm1rtySkUekxMw",
@@ -324,7 +324,7 @@
         document.getElementById('loginScreen').classList.add('hidden');
         document.getElementById('adminDashboard').classList.remove('hidden');
         window.initRealtimeOrders();
-        window.loadAdminProducts();
+        window.initRealtimeProducts(); // Real-time sync for products
       } else {
         document.getElementById('loginScreen').classList.remove('hidden');
         document.getElementById('adminDashboard').classList.add('hidden');
@@ -333,13 +333,17 @@
 
     window.enableAudioAlerts = function() {
       const audio = document.getElementById('orderNotificationSound');
-      audio.play().then(() => {
-        audio.pause();
-        audio.currentTime = 0;
-        const badge = document.getElementById('liveSoundBadge');
-        badge.className = "bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-1 rounded-full font-semibold flex items-center gap-1";
-        badge.innerHTML = '<i class="fa-solid fa-volume-high"></i> Sound Alerts Active';
-      }).catch(err => console.log(err));
+      if (audio) {
+        audio.play().then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+          const badge = document.getElementById('liveSoundBadge');
+          if (badge) {
+            badge.className = "bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-1 rounded-full font-semibold flex items-center gap-1";
+            badge.innerHTML = '<i class="fa-solid fa-volume-high"></i> Sound Alerts Active';
+          }
+        }).catch(err => console.log(err));
+      }
     };
 
     window.handleLogin = async function(e) {
@@ -442,30 +446,31 @@
         document.getElementById('newProdImagePreviewContainer').classList.add('hidden');
         document.getElementById('newProdCustomCategory').classList.add('hidden');
         newProdBase64Image = '';
-        window.loadAdminProducts();
       } catch (err) {
-        alert("Failed to add product.");
+        alert("Failed to add product: " + err.message);
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-plus"></i> Save Product to Firebase';
       }
     };
 
-    window.loadAdminProducts = async function() {
+    // Realtime Listener for Products Table
+    window.initRealtimeProducts = function() {
       const tbody = document.getElementById('adminProductsTableBody');
-      try {
-        const querySnapshot = await getDocs(collection(db, "products"));
+      const productsRef = collection(db, "products");
+
+      onSnapshot(productsRef, (snapshot) => {
         tbody.innerHTML = '';
         allAdminProducts = [];
         let count = 0;
 
-        if (querySnapshot.empty) {
+        if (snapshot.empty) {
           tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500">No custom products in database yet.</td></tr>`;
           document.getElementById('productCountLabel').innerText = `Showing 0 products`;
           return;
         }
 
-        querySnapshot.forEach((documentSnapshot) => {
+        snapshot.forEach((documentSnapshot) => {
           count++;
           const data = documentSnapshot.data();
           const docId = documentSnapshot.id;
@@ -491,7 +496,7 @@
                 ${isOut ? 'Out of Stock (0)' : `${qty} units`}
               </span>
             </td>
-            <td class="p-4 font-bold text-white">PKR ${data.price.toLocaleString()}</td>
+            <td class="p-4 font-bold text-white">PKR ${Number(data.price).toLocaleString()}</td>
             <td class="p-4">
               <button onclick="togglePinProduct('${docId}', ${!isPinned})" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 ${isPinned ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-800 text-slate-400 hover:text-white'}">
                 <i class="fa-solid fa-thumbtack"></i> ${isPinned ? 'Pinned (Top)' : 'Normal'}
@@ -509,15 +514,14 @@
           tbody.appendChild(tr);
         });
         document.getElementById('productCountLabel').innerText = `Showing ${count} products`;
-      } catch (err) {
-        console.error(err);
-      }
+      }, (err) => {
+        console.error("Error listening to products:", err);
+      });
     };
 
     window.togglePinProduct = async function(id, status) {
       try {
         await updateDoc(doc(db, "products", id), { isPinned: status });
-        window.loadAdminProducts();
       } catch (err) {
         alert("Failed to toggle pin status.");
       }
@@ -593,7 +597,6 @@
         await updateDoc(doc(db, "products", id), updateData);
         alert("Product successfully updated!");
         window.closeEditModal();
-        window.loadAdminProducts();
       } catch (err) {
         alert("Failed to update product.");
       } finally {
@@ -606,7 +609,6 @@
       if (!confirm("Are you sure you want to delete this product?")) return;
       try {
         await deleteDoc(doc(db, "products", docId));
-        window.loadAdminProducts();
       } catch (err) {
         alert("Failed to delete product.");
       }
