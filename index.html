@@ -154,7 +154,7 @@
     <!-- PRODUCT GRID -->
     <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <div class="col-span-full text-center py-12 text-slate-400">
-        <i class="fa-solid fa-spinner animate-spin text-2xl mr-2"></i> Loading catalog from Firebase...
+        <i class="fa-solid fa-spinner animate-spin text-2xl mr-2"></i> Connecting to live store catalog...
       </div>
     </div>
 
@@ -356,10 +356,10 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT & FIREBASE -->
+  <!-- JAVASCRIPT & FIREBASE (REAL-TIME LISTENER) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, updateDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const MY_WHATSAPP_NUMBER = "923219992695";
 
@@ -382,22 +382,18 @@
     window.currentCategory = 'all';
     window.searchQuery = '';
 
-    window.loadStoreProducts = async function() {
-      const grid = document.getElementById('productGrid');
-      try {
-        const querySnapshot = await getDocs(collection(db, "products"));
+    // Real-Time Store Products Listener
+    window.initRealtimeStoreProducts = function() {
+      const productsRef = collection(db, "products");
+      onSnapshot(productsRef, (snapshot) => {
         allProducts = [];
-        querySnapshot.forEach((docSnap) => {
+        snapshot.forEach((docSnap) => {
           allProducts.push({ id: docSnap.id, ...docSnap.data() });
         });
-
         window.renderProducts();
-      } catch (err) {
-        console.error("Error loading products:", err);
-        if (grid) {
-          grid.innerHTML = `<div class="col-span-full text-center py-12 text-red-500 font-bold">Failed to connect to database. Please check your internet connection.</div>`;
-        }
-      }
+      }, (err) => {
+        console.error("Error listening to products:", err);
+      });
     };
 
     window.renderProducts = function() {
@@ -720,7 +716,7 @@
       if (phoneLink) phoneLink.href = `https://wa.me/${MY_WHATSAPP_NUMBER}`;
       if (displayNo) displayNo.innerText = formattedPhone;
       
-      window.loadStoreProducts();
+      window.initRealtimeStoreProducts();
     };
   </script>
 </body>
