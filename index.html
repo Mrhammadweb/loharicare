@@ -356,10 +356,10 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT & FIREBASE (REAL-TIME LISTENER) -->
+ <!-- JAVASCRIPT & FIREBASE (REAL-TIME LISTENER FIX) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, doc, updateDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, doc, updateDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const MY_WHATSAPP_NUMBER = "923334272695";
 
@@ -373,7 +373,14 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    
+    // Enable Long-Polling & Persistent Caching to fix 404 & Connection Failures
+    const db = initializeFirestore(app, {
+      experimentalForceLongPolling: true,
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+      })
+    });
 
     let allProducts = [];
     window.cart = [];
@@ -386,11 +393,11 @@
     let currentPage = 1;
     const productsPerPage = 50;
 
-    // Real-Time Store Products Listener (Fixed Loading Glitch)
+    // Real-Time Store Products Listener
     window.initRealtimeStoreProducts = function() {
       const grid = document.getElementById('productGrid');
       if (grid && isInitialLoad) {
-        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 font-medium"><i class="fa-solid fa-spinner animate-spin text-2xl mr-2 text-brand-600"></i> Loading live medical catalog...</div>`;
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 font-medium"><i class="fa-solid fa-spinner animate-spin text-2xl mr-2 text-brand-600"></i> Loading catalog, please wait...</div>`;
       }
 
       const productsRef = collection(db, "products");
@@ -405,7 +412,7 @@
         console.error("Error listening to products:", err);
         const grid = document.getElementById('productGrid');
         if (grid) {
-          grid.innerHTML = `<div class="col-span-full text-center py-12 text-red-500 font-medium">Unable to connect to live store. Please refresh the page.</div>`;
+          grid.innerHTML = `<div class="col-span-full text-center py-12 text-red-500 font-medium">Unable to connect to live store catalog. Please refresh the page.</div>`;
         }
       });
     };
@@ -416,13 +423,11 @@
       if (!grid) return;
       grid.innerHTML = '';
 
-      // If Firebase hasn't returned any products yet during initial load
       if (isInitialLoad && allProducts.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 font-medium"><i class="fa-solid fa-spinner animate-spin text-2xl mr-2 text-brand-600"></i> Loading live medical catalog...</div>`;
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 font-medium"><i class="fa-solid fa-spinner animate-spin text-2xl mr-2 text-brand-600"></i> Loading catalog, please wait...</div>`;
         return;
       }
 
-      // SORTING FIX: Pinned products (isPinned == true) stay at the top
       const sortedProducts = [...allProducts].sort((a, b) => {
         const pinA = a.isPinned ? 1 : 0;
         const pinB = b.isPinned ? 1 : 0;
@@ -436,11 +441,10 @@
       });
 
       if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 font-medium"> Loading Please Wait ! </div>`;
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 font-medium">No medical products found matching your catalog search.</div>`;
         return;
       }
 
-      // PAGINATION LOGIC (Limit to 50 items per page)
       const startIndex = (currentPage - 1) * productsPerPage;
       const endIndex = startIndex + productsPerPage;
       const paginatedProducts = filtered.slice(startIndex, endIndex);
@@ -486,11 +490,9 @@
         grid.appendChild(card);
       });
 
-      // Render Pagination Buttons at the bottom of the grid
       renderPaginationControls(filtered.length);
     };
 
-    // Pagination helper functions
     window.renderPaginationControls = function(totalFilteredCount) {
       let paginationContainer = document.getElementById('paginationContainer');
       
@@ -560,7 +562,7 @@
 
     window.filterCategory = function(cat) {
       window.currentCategory = cat;
-      currentPage = 1; // Reset to page 1
+      currentPage = 1;
       document.querySelectorAll('.category-tab').forEach(b => {
         b.className = "category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500";
       });
@@ -570,7 +572,7 @@
 
     window.filterProducts = function() {
       window.searchQuery = document.getElementById('searchInput').value;
-      currentPage = 1; // Reset to page 1
+      currentPage = 1;
       window.renderProducts();
     };
 
