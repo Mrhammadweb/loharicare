@@ -166,7 +166,7 @@
         <p class="text-slate-300 text-sm mt-2">Enter your Order ID to check your live dispatch status straight from Firebase.</p>
 
         <div class="mt-6 flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
-          <input type="text" id="trackingInput" placeholder="e.g., LHR-84920" class="flex-1 px-4 py-3 rounded-xl text-slate-900 font-mono text-sm focus:outline-none">
+          <input type="text" id="trackingInput" placeholder="e.g., A2Z-849201" class="flex-1 px-4 py-3 rounded-xl text-slate-900 font-mono text-sm focus:outline-none">
           <button onclick="trackOrder()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-6 py-3 rounded-xl text-sm transition shadow-md">Track Package</button>
         </div>
       </div>
@@ -230,8 +230,8 @@
         <div id="cartItemsList" class="p-5 flex-1 overflow-y-auto space-y-4"></div>
         <div class="p-5 border-t border-slate-200 bg-slate-50 space-y-2">
           <div class="flex justify-between text-xs text-slate-500">
-            <span>Delivery Charges:</span>
-            <span class="font-semibold text-slate-700">Applied at Checkout (PKR 200)</span>
+            <span>Delivery Charges (City-Based):</span>
+            <span id="cartDeliveryDisplay" class="font-semibold text-slate-700">PKR 200</span>
           </div>
           <div class="flex justify-between text-base font-bold text-slate-900 border-t pt-2">
             <span>Estimated Total (Incl. Delivery)</span>
@@ -267,13 +267,13 @@
               </div>
               <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">City *</label>
-                <select id="custCity" class="w-full px-3 py-2 border rounded-lg text-sm bg-white outline-none">
-                  <option value="Lahore">Lahore (Same-Day Express)</option>
-                  <option value="Karachi">Karachi</option>
-                  <option value="Islamabad">Islamabad / Rawalpindi</option>
-                  <option value="Faisalabad">Faisalabad</option>
-                  <option value="Multan">Multan</option>
-                  <option value="Other">Other City</option>
+                <select id="custCity" onchange="updateDeliveryFee()" class="w-full px-3 py-2 border rounded-lg text-sm bg-white outline-none">
+                  <option value="Lahore" data-fee="200">Lahore (Same-Day Express - PKR 200)</option>
+                  <option value="Faisalabad" data-fee="300">Faisalabad (PKR 300)</option>
+                  <option value="Islamabad" data-fee="350">Islamabad / Rawalpindi (PKR 350)</option>
+                  <option value="Multan" data-fee="350">Multan (PKR 350)</option>
+                  <option value="Karachi" data-fee="400">Karachi (PKR 400)</option>
+                  <option value="Other" data-fee="450">Other City / Remote Area (PKR 450)</option>
                 </select>
               </div>
             </div>
@@ -323,7 +323,7 @@
 
           <div class="pt-4 border-t flex items-center justify-between">
             <div>
-              <p class="text-xs text-slate-500">Payable Total (Incl. Delivery)</p>
+              <p class="text-xs text-slate-500">Payable Total (Incl. <span id="checkoutDeliveryText">PKR 200</span> Delivery)</p>
               <p id="checkoutGrandTotal" class="text-xl font-bold text-brand-700">PKR 0</p>
             </div>
             <button type="submit" id="submitOrderBtn" class="bg-brand-600 hover:bg-brand-700 text-white font-bold px-6 py-3 rounded-xl text-sm shadow-md flex items-center gap-2">
@@ -356,10 +356,10 @@
     </div>
   </div>
 
- <!-- JAVASCRIPT & FIREBASE (REAL-TIME LISTENER FIX) -->
+  <!-- JAVASCRIPT & FIREBASE (REAL-TIME LISTENER FIX) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, doc, updateDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, getDocs, doc, updateDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const MY_WHATSAPP_NUMBER = "923334272695";
 
@@ -392,6 +392,15 @@
     let isInitialLoad = true;
     let currentPage = 1;
     const productsPerPage = 50;
+
+    // Dynamic City-Wise Delivery Fee Calculator
+    window.updateDeliveryFee = function() {
+      const citySelect = document.getElementById('custCity');
+      if (!citySelect) return;
+      const selectedOption = citySelect.options[citySelect.selectedIndex];
+      window.deliveryFee = Number(selectedOption.getAttribute('data-fee')) || 200;
+      window.updateCartUI();
+    };
 
     // Real-Time Store Products Listener
     window.initRealtimeStoreProducts = function() {
@@ -642,6 +651,11 @@
       const totalEl = document.getElementById('cartGrandTotal');
       const checkoutTotal = document.getElementById('checkoutGrandTotal');
       const checkoutBtn = document.getElementById('checkoutBtn');
+      const cartDeliveryEl = document.getElementById('cartDeliveryDisplay');
+      const checkoutDeliveryEl = document.getElementById('checkoutDeliveryText');
+
+      if (cartDeliveryEl) cartDeliveryEl.innerText = `PKR ${window.deliveryFee}`;
+      if (checkoutDeliveryEl) checkoutDeliveryEl.innerText = `PKR ${window.deliveryFee}`;
 
       if (!badge || !list) return;
 
@@ -713,6 +727,7 @@
         walletSenderNo: paymentMethod === 'MOBILE_WALLET' ? document.getElementById('walletSenderNo').value.trim() : 'N/A',
         paymentScreenshot: window.base64Image || 'None',
         items: window.cart,
+        deliveryFee: window.deliveryFee,
         totalAmount: total,
         status: 'Order Received',
         createdAt: new Date().toISOString()
@@ -736,7 +751,7 @@
         document.getElementById('generatedOrderId').innerText = code;
 
         let itemsText = window.cart.map(i => `• ${i.title} (x${i.qty})`).join('%0A');
-        const waMsg = `*New A2Z LifeCare Order!*%0AOrder ID: ${code}%0ACustomer: ${order.customerName}%0APhone: ${order.phone}%0ACity: ${order.city}%0AAddress: ${order.address}%0APayment: ${paymentMethod}%0ATotal: PKR ${total.toLocaleString()} (Incl. Delivery)%0A%0A*Items Ordered:*%0A${itemsText}`;
+        const waMsg = `*New A2Z LifeCare Order!*%0AOrder ID: ${code}%0ACustomer: ${order.customerName}%0APhone: ${order.phone}%0ACity: ${order.city}%0AAddress: ${order.address}%0APayment: ${paymentMethod}%0ADelivery Fee: PKR ${window.deliveryFee}%0ATotal: PKR ${total.toLocaleString()} (Incl. Delivery)%0A%0A*Items Ordered:*%0A${itemsText}`;
         const waUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${waMsg}`;
         
         document.getElementById('whatsappOrderLink').href = waUrl;
@@ -784,6 +799,7 @@
       if (phoneLink) phoneLink.href = `https://wa.me/${MY_WHATSAPP_NUMBER}`;
       if (displayNo) displayNo.innerText = formattedPhone;
       
+      window.updateDeliveryFee();
       window.initRealtimeStoreProducts();
     };
   </script>
