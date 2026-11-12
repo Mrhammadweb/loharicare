@@ -86,8 +86,8 @@
         <button onclick="handleLogout()" class="bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition">
           Logout
         </button>
-        <button onclick="loadAdminProducts();" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-2">
-          <i class="fa-solid fa-rotate"></i> Refresh Products
+        <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+          <i class="fa-solid fa-rotate"></i> Refresh Panel
         </button>
         <a href="index.html" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl transition" target="_blank">
           View Store
@@ -209,7 +209,7 @@
             </tr>
           </thead>
           <tbody id="adminProductsTableBody" class="divide-y divide-slate-800">
-            <tr><td colspan="6" class="p-8 text-center text-slate-500">Loading catalog items...</td></tr>
+            <tr><td colspan="6" class="p-8 text-center text-slate-500"><i class="fa-solid fa-spinner animate-spin text-xl mr-2 text-teal-400"></i> Loading catalog items...</td></tr>
           </tbody>
         </table>
       </div>
@@ -239,7 +239,7 @@
             </tr>
           </thead>
           <tbody id="ordersTableBody" class="divide-y divide-slate-800">
-            <tr><td colspan="7" class="p-8 text-center text-slate-500">Connecting live to Firebase...</td></tr>
+            <tr><td colspan="7" class="p-8 text-center text-slate-500"><i class="fa-solid fa-spinner animate-spin text-xl mr-2 text-teal-400"></i> Connecting live to Firebase...</td></tr>
           </tbody>
         </table>
       </div>
@@ -370,7 +370,7 @@
           <p id="printPaymentType" class="font-black text-xs uppercase px-2 py-0.5 border border-black inline-block mt-0.5"></p>
         </div>
         <div class="text-right">
-          <p class="text-[10px] text-slate-500">Total Payable (Incl. PKR 200 Delivery):</p>
+          <p id="printDeliveryLabel" class="text-[10px] text-slate-500">Total Payable (Incl. Delivery):</p>
           <p id="printTotalAmount" class="font-black text-base text-black"></p>
         </div>
       </div>
@@ -387,7 +387,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBfteVKL-Z9XCRtbNaQaDm1rtySkUekxMw",
@@ -400,7 +400,14 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
+    
+    // Force Long-Polling & Persistent Cache to fix 404 / connection timeouts in admin panel
+    const db = initializeFirestore(app, {
+      experimentalForceLongPolling: true,
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+      })
+    });
 
     let newProdBase64Image = '';
     let editProdBase64Image = '';
@@ -795,7 +802,7 @@
       });
     };
 
-window.printParcelInvoice = function(docId) {
+    window.printParcelInvoice = function(docId) {
       const order = allOrders.find(o => o.id === docId);
       if (!order) return alert("Order details not found.");
 
@@ -825,10 +832,10 @@ window.printParcelInvoice = function(docId) {
         `;
       });
 
-      // DYNAMIC ACCURATE TOTAL CALCULATION (Items Subtotal + PKR 200 Delivery)
-      const deliveryFee = 200;
+      const deliveryFee = order.deliveryFee !== undefined ? Number(order.deliveryFee) : 200;
       const accurateGrandTotal = itemsSubtotal + deliveryFee;
 
+      document.getElementById('printDeliveryLabel').innerText = `Total Payable (Incl. PKR ${deliveryFee} Delivery):`;
       document.getElementById('printTotalAmount').innerText = `PKR ${accurateGrandTotal.toLocaleString()}`;
 
       window.print();
