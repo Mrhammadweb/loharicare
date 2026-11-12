@@ -734,17 +734,23 @@
       };
 
       try {
+        // 1. Save order to Firebase
         await addDoc(collection(db, "orders"), order);
 
+        // 2. Safely attempt stock update without blocking order confirmation
         for (const item of window.cart) {
-          const productRef = doc(db, "products", item.id);
-          const currentProd = allProducts.find(p => p.id === item.id);
-          if (currentProd) {
-            const newQty = Math.max(0, (currentProd.stockQty || 10) - item.qty);
-            await updateDoc(productRef, {
-              stockQty: newQty,
-              stock: newQty > 0 ? `${newQty} in stock` : 'Out of Stock'
-            });
+          try {
+            const productRef = doc(db, "products", item.id);
+            const currentProd = allProducts.find(p => p.id === item.id);
+            if (currentProd) {
+              const newQty = Math.max(0, (currentProd.stockQty || 10) - item.qty);
+              await updateDoc(productRef, {
+                stockQty: newQty,
+                stock: newQty > 0 ? `${newQty} in stock` : 'Out of Stock'
+              });
+            }
+          } catch (stockErr) {
+            console.warn("Stock update skipped for item:", item.title);
           }
         }
 
@@ -769,7 +775,6 @@
         btn.innerText = "Confirm Order";
       }
     };
-
     window.trackOrder = async function() {
       const code = document.getElementById('trackingInput').value.trim();
       const disp = document.getElementById('trackingDisplay');
