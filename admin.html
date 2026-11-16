@@ -482,32 +482,56 @@
       }
     };
 
+     function compressImageToBase64(file, callback) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const maxDim = 600;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height && width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          callback(canvas.toDataURL('image/jpeg', 0.75));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
     window.previewNewProductImage = function(event) {
       const file = event.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          newProdBase64Image = e.target.result;
+        compressImageToBase64(file, (compressedDataUrl) => {
+          newProdBase64Image = compressedDataUrl;
           const preview = document.getElementById('newProdImagePreview');
           preview.src = newProdBase64Image;
           document.getElementById('newProdImagePreviewContainer').classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
+        });
       }
     };
 
     window.previewEditProductImage = function(event) {
       const file = event.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          editProdBase64Image = e.target.result;
+        compressImageToBase64(file, (compressedDataUrl) => {
+          editProdBase64Image = compressedDataUrl;
           document.getElementById('editProdImagePreview').src = editProdBase64Image;
-        };
-        reader.readAsDataURL(file);
+        });
       }
     };
-
     window.handleAddNewProduct = async function(e) {
       e.preventDefault();
       const btn = document.getElementById('saveProdBtn');
