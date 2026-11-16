@@ -144,10 +144,11 @@
 
       <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
         <button onclick="filterCategory('all')" id="tab-all" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-brand-600 text-white shadow-sm">All Products</button>
-        <button onclick="filterCategory('supplements')" id="tab-supplements" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500">Supplements</button>
-        <button onclick="filterCategory('milks')" id="tab-milks" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500">Milks & Nutrition</button>
+        <button onclick="filterCategory('soft')" id="tab-soft" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500">Soft Orthopedic</button>
+        <button onclick="filterCategory('nebulizers')" id="tab-nebulizers" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500">Nebulizers</button>
         <button onclick="filterCategory('devices')" id="tab-devices" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500">BP Meters & Devices</button>
         <button onclick="filterCategory('surgical')" id="tab-surgical" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500">Surgical Supplies</button>
+        <button onclick="filterCategory('instruments')" id="tab-instruments" class="category-tab px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:border-brand-500">Instruments</button>
       </div>
     </div>
 
@@ -706,7 +707,7 @@
       document.getElementById('checkoutModal').classList.add('hidden');
     };
 
-    window.handlePlaceOrder = async function(e) {
+ window.handlePlaceOrder = async function(e) {
       e.preventDefault();
       const btn = document.getElementById('submitOrderBtn');
       btn.disabled = true;
@@ -775,6 +776,7 @@
         btn.innerText = "Confirm Order";
       }
     };
+
     window.trackOrder = async function() {
       const code = document.getElementById('trackingInput').value.trim();
       const disp = document.getElementById('trackingDisplay');
