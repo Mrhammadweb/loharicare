@@ -189,12 +189,39 @@
 
     <!-- MANAGE PRODUCTS TABLE -->
     <div class="bg-slate-800/40 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-      <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+      <div class="p-4 border-b border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-boxes-stacked text-teal-400"></i>
           <h3 class="font-bold text-sm text-white">Manage Store Products (Firebase Catalog)</h3>
         </div>
-        <span class="text-xs text-slate-400" id="productCountLabel">Showing 0 products</span>
+
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <div class="relative flex-1 sm:w-64">
+            <input
+              type="text"
+              id="adminProductSearchInput"
+              onkeyup="renderAdminProducts()"
+              placeholder="Search product or category..."
+              class="w-full pl-8 pr-3 py-1.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-teal-500 outline-none"
+            >
+            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+          </div>
+          <button
+            type="button"
+            onclick="renderAdminProducts()"
+            class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-3.5 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5"
+          >
+            <i class="fa-solid fa-magnifying-glass"></i> Search
+          </button>
+          <button
+            type="button"
+            onclick="clearAdminProductSearch()"
+            class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-3 py-1.5 rounded-xl text-xs transition"
+          >
+            Clear
+          </button>
+          <span class="text-xs text-slate-400 ml-1" id="productCountLabel">Showing 0 products</span>
+        </div>
       </div>
 
       <div class="overflow-x-auto">
@@ -403,12 +430,8 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     
-    // Force Long-Polling & Persistent Cache to fix 404 / connection timeouts in admin panel
-    const db = initializeFirestore(app, {
-      experimentalForceLongPolling: true,
-      localCache: persistentLocalCache({
-        tabManager: persistentMultipleTabManager()
-      })
+   const db = initializeFirestore(app, {
+      experimentalForceLongPolling: true
     });
 
     let newProdBase64Image = '';
@@ -482,7 +505,7 @@
       }
     };
 
-     function compressImageToBase64(file, callback) {
+   function compressImageToBase64(file, callback) {
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
@@ -532,6 +555,7 @@
         });
       }
     };
+
     window.handleAddNewProduct = async function(e) {
       e.preventDefault();
       const btn = document.getElementById('saveProdBtn');
@@ -576,67 +600,97 @@
       }
     };
 
+    window.renderAdminProducts = function() {
+      const tbody = document.getElementById('adminProductsTableBody');
+      const searchTerm = (document.getElementById('adminProductSearchInput')?.value || '').trim().toLowerCase();
+      tbody.innerHTML = '';
+
+      if (allAdminProducts.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500">No custom products in database yet.</td></tr>`;
+        document.getElementById('productCountLabel').innerText = `Showing 0 products`;
+        return;
+      }
+
+      const filteredProducts = allAdminProducts.filter((p) => {
+        if (!searchTerm) return true;
+        const title = (p.title || '').toLowerCase();
+        const category = (p.category || '').toLowerCase();
+        const description = (p.description || '').toLowerCase();
+        return title.includes(searchTerm) || category.includes(searchTerm) || description.includes(searchTerm);
+      });
+
+      if (filteredProducts.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No products match "${searchTerm}".</td></tr>`;
+        document.getElementById('productCountLabel').innerText = `Showing 0 of ${allAdminProducts.length} products`;
+        return;
+      }
+
+      filteredProducts.forEach((data) => {
+        const docId = data.id;
+        const qty = data.stockQty !== undefined ? data.stockQty : 10;
+        const isOut = qty <= 0;
+        const isPinned = data.isPinned || false;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/30 transition";
+        tr.innerHTML = `
+          <td class="p-4 flex items-center gap-3">
+            <img src="${data.image}" class="w-10 h-10 object-cover rounded-lg border border-slate-700">
+            <div>
+              <p class="font-bold text-white text-sm line-clamp-1">${data.title}</p>
+              <p class="text-[10px] text-slate-400 line-clamp-1">${data.description || 'No description'}</p>
+            </div>
+          </td>
+          <td class="p-4 uppercase text-[10px] font-semibold text-teal-400">${data.category}</td>
+          <td class="p-4">
+            <span class="px-2 py-1 rounded text-[10px] font-bold ${isOut ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}">
+              ${isOut ? 'Out of Stock (0)' : `${qty} units`}
+            </span>
+          </td>
+          <td class="p-4 font-bold text-white">PKR ${Number(data.price).toLocaleString()}</td>
+          <td class="p-4">
+            <button onclick="togglePinProduct('${docId}', ${!isPinned})" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 ${isPinned ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-800 text-slate-400 hover:text-white'}">
+              <i class="fa-solid fa-thumbtack"></i> ${isPinned ? 'Pinned (Top)' : 'Normal'}
+            </button>
+          </td>
+          <td class="p-4 text-right space-x-1">
+            <button onclick="openEditModal('${docId}')" class="bg-amber-500/20 hover:bg-amber-500 text-amber-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition font-semibold">
+              <i class="fa-solid fa-pen mr-1"></i> Edit
+            </button>
+            <button onclick="deleteProduct('${docId}')" class="bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition font-semibold">
+              <i class="fa-solid fa-trash mr-1"></i> Delete
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('productCountLabel').innerText = searchTerm
+        ? `Showing ${filteredProducts.length} of ${allAdminProducts.length} products`
+        : `Showing ${allAdminProducts.length} products`;
+    };
+
+    window.clearAdminProductSearch = function() {
+      const input = document.getElementById('adminProductSearchInput');
+      if (input) input.value = '';
+      window.renderAdminProducts();
+    };
+
     window.initRealtimeProducts = function() {
       const tbody = document.getElementById('adminProductsTableBody');
       const productsRef = collection(db, "products");
 
       onSnapshot(productsRef, (snapshot) => {
-        tbody.innerHTML = '';
         allAdminProducts = [];
-        let count = 0;
-
-        if (snapshot.empty) {
-          tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500">No custom products in database yet.</td></tr>`;
-          document.getElementById('productCountLabel').innerText = `Showing 0 products`;
-          return;
-        }
-
         snapshot.forEach((documentSnapshot) => {
-          count++;
-          const data = documentSnapshot.data();
-          const docId = documentSnapshot.id;
-          allAdminProducts.push({ id: docId, ...data });
-
-          const qty = data.stockQty !== undefined ? data.stockQty : 10;
-          const isOut = qty <= 0;
-          const isPinned = data.isPinned || false;
-
-          const tr = document.createElement('tr');
-          tr.className = "hover:bg-slate-800/30 transition";
-          tr.innerHTML = `
-            <td class="p-4 flex items-center gap-3">
-              <img src="${data.image}" class="w-10 h-10 object-cover rounded-lg border border-slate-700">
-              <div>
-                <p class="font-bold text-white text-sm line-clamp-1">${data.title}</p>
-                <p class="text-[10px] text-slate-400 line-clamp-1">${data.description || 'No description'}</p>
-              </div>
-            </td>
-            <td class="p-4 uppercase text-[10px] font-semibold text-teal-400">${data.category}</td>
-            <td class="p-4">
-              <span class="px-2 py-1 rounded text-[10px] font-bold ${isOut ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}">
-                ${isOut ? 'Out of Stock (0)' : `${qty} units`}
-              </span>
-            </td>
-            <td class="p-4 font-bold text-white">PKR ${Number(data.price).toLocaleString()}</td>
-            <td class="p-4">
-              <button onclick="togglePinProduct('${docId}', ${!isPinned})" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 ${isPinned ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-800 text-slate-400 hover:text-white'}">
-                <i class="fa-solid fa-thumbtack"></i> ${isPinned ? 'Pinned (Top)' : 'Normal'}
-              </button>
-            </td>
-            <td class="p-4 text-right space-x-1">
-              <button onclick="openEditModal('${docId}')" class="bg-amber-500/20 hover:bg-amber-500 text-amber-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition font-semibold">
-                <i class="fa-solid fa-pen mr-1"></i> Edit
-              </button>
-              <button onclick="deleteProduct('${docId}')" class="bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition font-semibold">
-                <i class="fa-solid fa-trash mr-1"></i> Delete
-              </button>
-            </td>
-          `;
-          tbody.appendChild(tr);
+          allAdminProducts.push({ id: documentSnapshot.id, ...documentSnapshot.data() });
         });
-        document.getElementById('productCountLabel').innerText = `Showing ${count} products`;
+        window.renderAdminProducts();
       }, (err) => {
         console.error("Error listening to products:", err);
+        if (tbody) {
+          tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-400">Error loading catalog items.</td></tr>`;
+        }
       });
     };
 
